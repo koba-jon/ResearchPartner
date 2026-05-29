@@ -24,15 +24,15 @@ You drive the loop; the docs keep both tools in sync across sessions.
 
 The base is public; your instance must be private.
 
-**First, create a new EMPTY private repository on GitHub** — no README, no license, no `.gitignore`, just the bare repo (e.g. `<you>/my-research`). You will push to it in step 4, so it must exist first (otherwise `git push` reports "Repository not found").
+**First, create a new EMPTY private repository on GitHub** — no README, no license, no `.gitignore`, just the bare repo (e.g. `<you>/<your-repo-name>`). You will push to it in step 4, so it must exist first (otherwise `git push` reports "Repository not found").
 
 Then clone the base, detach it as `upstream`, and point `origin` at the empty repo you just created:
 
 ```bash
-git clone https://github.com/koba-jon/ResearchPartner.git my-research   # local dir name is up to you
-cd my-research
+git clone https://github.com/koba-jon/ResearchPartner.git <your-repo-name>   # local dir name is up to you
+cd <your-repo-name>
 git remote rename origin upstream                       # keep the base as 'upstream' for updates
-git remote add origin https://github.com/<you>/my-research.git   # the EMPTY private repo from above
+git remote add origin https://github.com/<you>/<your-repo-name>.git   # the EMPTY private repo from above
 ```
 
 (Prefer to let setup do the rename? Skip the `git remote rename` line and pass `--adopt-base-as-upstream` to `init.py` in step 3.)
@@ -42,15 +42,15 @@ git remote add origin https://github.com/<you>/my-research.git   # the EMPTY pri
 Move the clone so it sits **inside** your project's working directory (the folder that holds your code, data, and results). A typical layout:
 
 ```
-my-research/                 <- your workspace (PROJECT_ROOT)
+<PROJECT_ROOT>/                 <- your workspace (PROJECT_ROOT)
 ├── src/                     <- your code
 ├── data/  results/  ...
-└── ResearchPartner/         <- this clone (holds docs/ + scripts)
+└── <your-repo-name>         <- this clone (holds docs/ + scripts)
 ```
 
 ```bash
-mv ResearchPartner /path/to/my-research/
-cd /path/to/my-research/ResearchPartner
+mv <your-repo-name> /path/to/<PROJECT_ROOT>/
+cd /path/to/<PROJECT_ROOT>/<your-repo-name>
 ```
 
 ### 3. Configure (interactive)
@@ -69,6 +69,8 @@ It interviews you in a few phases and then renders your configured instance:
 `init.py` then renders `docs/`, writes `researchpartner.config.json` and `project-instructions.txt`, installs the git hook, and makes **one** commit. It **never pushes** and **never creates a remote** — you control your private history. (Re-run safely with `--dry-run` to preview, or `--print-config` to see resolved settings.)
 
 ### 4. Push to your private repo
+
+Push the configured instance to the empty private repo you created in step 1:
 
 ```bash
 git push -u origin main
