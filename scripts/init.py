@@ -47,7 +47,6 @@ def ask_yesno(prompt, default="yes"):
 # Guards so a stray multi-line paste (each pasted line answers the next prompt)
 # cannot silently produce a garbage, committed instance. A rejected value
 # re-prompts, consuming the bad line rather than accepting it.
-_NAME_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9 ._-]{0,59}$")
 _PASTE_RE = re.compile(r"[=(){};]|^#")
 
 
@@ -58,15 +57,6 @@ def ask_clean(prompt, default=""):
         if len(v) <= 80 and not _PASTE_RE.search(v):
             return v
         fw.warn("  that looks like a stray paste; enter a short plain value.")
-
-
-def ask_name(prompt, default=""):
-    """A name/identifier: letters, digits, space, and . _ - (1-60 chars)."""
-    while True:
-        v = ask(prompt, default)
-        if _NAME_RE.match(v):
-            return v
-        fw.warn("  use letters/digits/space and . _ - (1-60 chars).")
 
 
 def ask_path(prompt):
@@ -131,7 +121,6 @@ def interview(root):
     print(scan["summary"])
     print(scan["tree"])
     cfg["INGEST_SUMMARY"] = scan["summary"]
-    cfg["INGEST_TREE"] = scan["tree"]
 
     # Source mirror: auto-enabled when there is a PROJECT_ROOT/src to mirror. sync_src
     # mirrors that path specifically, so gating on has_code would mis-fire for code in
@@ -157,8 +146,8 @@ def interview(root):
         "Project name",
         "The display name used across your docs and the Claude project instructions.",
         os.path.basename(cfg["PROJECT_ROOT"]),
-        lambda: ask_name("  Enter the project name to use instead"),
-        default_ok=lambda d: bool(_NAME_RE.match(d)))
+        lambda: ask_clean("  Enter the project name to use instead"),
+        default_ok=lambda d: len(d) <= 80 and not _PASTE_RE.search(d))
 
     print("\n  Your name as it should appear in the docs (the human collaborator).")
     cfg["USER_NAME"] = ask_clean("Your name")
@@ -188,6 +177,12 @@ def interview(root):
 
 def render_all(root, cfg):
     ctx = fw.derive(cfg)
+    # Free-text fields are DATA, not templates: neutralize any {{...}} inside them
+    # so a goal line or scan summary that mentions a template var cannot abort the
+    # render via the unresolved-token check.
+    for _k in ("INTENT_DOMAIN", "INTENT_STACK", "INTENT_GOAL", "INTENT_FIRST_STEP", "INGEST_SUMMARY"):
+        if isinstance(ctx.get(_k), str):
+            ctx[_k] = ctx[_k].replace("{{", "{").replace("}}", "}")
     problems = fw.validate_config(cfg)
     if problems:
         fw.die("config is incomplete:\n  " + "\n  ".join(problems))
@@ -212,7 +207,7 @@ def _remotes(root):
         return set()
 
 
-def base_protection(root, force, adopt, git_ok=True):
+def base_protection(root, force, adopt, git_ok=True, dry_run=False):
     if not fw.is_base_repo(root):
         return  # already a configured instance
     if force:
@@ -220,11 +215,14 @@ def base_protection(root, force, adopt, git_ok=True):
         return
     if adopt:
         if git_ok and fw.current_remote_url("origin", root) and "upstream" not in _remotes(root):
-            try:
-                fw.git("remote", "rename", "origin", "upstream", cwd=root)
-                fw.log("Renamed remote origin -> upstream.")
-            except RuntimeError as exc:
-                fw.warn("could not rename origin -> upstream: %s" % exc)
+            if dry_run:
+                fw.log("Dry run -- would rename remote origin -> upstream (skipped).")
+            else:
+                try:
+                    fw.git("remote", "rename", "origin", "upstream", cwd=root)
+                    fw.log("Renamed remote origin -> upstream.")
+                except RuntimeError as exc:
+                    fw.warn("could not rename origin -> upstream: %s" % exc)
         fw.log("Adopting base as upstream. Set your own private repo as origin before pushing.")
         return
     # Marker present without --force/--adopt: allow ONLY if this checkout has
@@ -277,7 +275,8 @@ def main(argv=None):
     # base_protection only fires on the unconfigured base; a configured clone passes
     # instantly. --print-config is allowed to inspect config without these gates.
     if not args.print_config:
-        base_protection(root, args.force, args.adopt_base_as_upstream, git_ok=not args.skip_git)
+        base_protection(root, args.force, args.adopt_base_as_upstream,
+                        git_ok=not args.skip_git, dry_run=args.dry_run)
         docs_dir = os.path.join(root, "docs")
         if os.path.isdir(docs_dir) and os.listdir(docs_dir) and not (args.force or args.dry_run):
             fw.die("docs/ already exists and is non-empty — refusing to overwrite a live "

@@ -37,7 +37,10 @@ def main(argv=None):
         fw.die("no %s in %s — update is for a configured clone, not the base." % (fw.CONFIG_FILE, root))
     cfg = fw.load_config(cfg_path)
     ctx = fw.derive(cfg)
-    manifest = fw.load_manifest(os.path.join(root, "ownership.json"))
+    try:
+        manifest = fw.load_manifest(os.path.join(root, "ownership.json"))
+    except fw.ConfigError as exc:
+        fw.die(str(exc))
 
     try:
         rendered = fw.render_tree(os.path.join(root, "templates"), ctx, manifest)

@@ -146,7 +146,7 @@ Stop conditions: <budget or no-improvement rule>. See docs/operations/auto-mode.
 <!-- if:ENABLE_PUBLISH_STEP=yes -->
 ## Publish (optional closing step)
 
-This step is opt-in (config `ENABLE_PUBLISH_STEP=yes`). It applies to any task whose result should land in the git docs repo: a documentation edit, a recorded result, or a refreshed `src/` mirror. Append a `Publish:` line to the prompt so the executor commits and pushes *after Verification passes*. It stages the repo's tracked content, so it captures both your documentation edits and the `src/` mirror in one commit:
+This step is opt-in (config `ENABLE_PUBLISH_STEP=yes`). It applies to any task whose result should land in the git docs repo -- a documentation edit, a recorded result, or (when the src mirror is on) refreshed source. Append a `Publish:` line to the prompt so the executor commits and pushes *after Verification passes*. It stages the repo's tracked content, so one commit captures your documentation edits and, if the mirror is enabled, the `src/` mirror:
 
 ```text
 Publish: once Verification passes, publish to the git docs repo:
@@ -157,7 +157,7 @@ Publish: once Verification passes, publish to the git docs repo:
     && git push origin HEAD
 ```
 
-- Push only the docs repo {{REPO_VAR_BRACE}}. Never commit or push the workspace {{PROJECT_VAR_BRACE}}; it is a non-git local master.
+- Push only the docs repo {{REPO_VAR_BRACE}} -- never the workspace {{PROJECT_VAR_BRACE}}.
 - Guard first: `make docs-check` aborts the publish on failure (the `&&` chain stops) and is never bypassed.
 - `make sync-src` refreshes the read-only `src/` mirror from {{PROJECT_VAR_BRACE}}/src (a no-op unless the source mirror is enabled).
 - The `:(exclude)*.rp-new` pathspec keeps unreviewed `*.rp-new` merge artifacts out of the commit, and the commit runs only when something is staged ("nothing to commit" is normal, not a failure).

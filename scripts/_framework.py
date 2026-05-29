@@ -362,7 +362,6 @@ DEFAULT_CONFIG = {
     "INTENT_GOAL": "",
     "INTENT_FIRST_STEP": "",
     "INGEST_SUMMARY": "",
-    "INGEST_TREE": "",
 }
 
 _COMPUTE_ENVS = {"colab", "local-gpu", "local-cpu", "other"}
@@ -373,7 +372,9 @@ def shell_ident(name):
     """Turn an arbitrary project name into a SHELL-SAFE uppercase identifier."""
     cleaned = re.sub(r"[^A-Za-z0-9]+", "_", name).strip("_").upper()
     if not cleaned:
-        cleaned = "PROJECT"
+        # All-non-ASCII name (e.g. Japanese): fall back to a stable, distinct
+        # shell-safe stem so two different names do not collide on a fixed "PROJECT".
+        cleaned = "PROJECT_" + hashlib.sha1(name.encode("utf-8")).hexdigest()[:6].upper()
     if cleaned[0].isdigit():
         cleaned = "_" + cleaned
     return cleaned
@@ -547,8 +548,13 @@ class Manifest:
 
 
 def load_manifest(path):
-    with open(path, "r", encoding="utf-8") as fh:
-        data = json.load(fh)
+    try:
+        with open(path, "r", encoding="utf-8") as fh:
+            data = json.load(fh)
+    except (OSError, ValueError) as exc:
+        raise ConfigError("ownership manifest %s is unreadable or not valid JSON: %s" % (path, exc))
+    if not isinstance(data, dict) or not isinstance(data.get("rules"), list):
+        raise ConfigError("ownership manifest %s must be a JSON object with a 'rules' list" % path)
     return Manifest(data["rules"])
 
 
@@ -767,7 +773,10 @@ def validate_manifest(root=None):
     man_path = os.path.join(root, "ownership.json")
     if not os.path.isfile(man_path):
         return ["ownership.json not found"]
-    manifest = load_manifest(man_path)
+    try:
+        manifest = load_manifest(man_path)
+    except ConfigError as exc:
+        return [str(exc)]
     valid_owners = {"framework", "project", "conditional", "ignore"}
     for rule in manifest.rules:
         if "glob" not in rule or "owner" not in rule:

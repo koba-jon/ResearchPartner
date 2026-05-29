@@ -12,6 +12,7 @@ This file stores actions and proposals that should not be made unless {{USER_NAM
 | treat "N hours is okay" from {{USER_NAME}} as the expected wall-time | it is a max budget, not an expectation |
 | boost a time estimate without an empirical anchor | use `docs/operations/time-estimation.md`; an anchor task ID and actual wall-time are required |
 | state code-grounded claims without verifying current files | project knowledge is a snapshot; confirm with rg / view |
+| revive an approach recorded as rejected in `docs/method/algorithmic-levers.md` section 3 | that file is the master list of dead ends; re-evaluate only if {{USER_NAME}} asks |
 <!-- if:COMPUTE_ENV=colab -->| read past results from the transient {{COMPUTE_ENV}} drive unless they are guaranteed present | OC-1 violation |<!-- endif -->
 <!-- if:SRC_MIRROR_ENABLED=yes -->| include git commit / push for the non-git workspace root {{PROJECT_VAR_BRACE}} | the workspace root is a non-git local master |<!-- endif -->
 <!-- if:SRC_MIRROR_ENABLED=yes -->| directly edit the `src/` mirror under {{REPO_VAR_BRACE}} | mirror violation; edit the workspace source and sync |<!-- endif -->

@@ -67,6 +67,13 @@ class GuardCase(unittest.TestCase):
         self.assertEqual(r.returncode, 1)
         self.assertIn("rules README", r.stderr)
 
+    def test_titled_link_passes(self):
+        # a markdown link with a title must not be misread as a missing target
+        u.append(self.doc("project/project-status.md"),
+                 '\nSee [the numbers](../evaluation/comparison.md "metric table").\n')
+        r = u.guard(self.clone)
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+
 
 class JapaneseDocsCase(unittest.TestCase):
     """A non-ASCII-docs clone must NOT be flagged for its script."""

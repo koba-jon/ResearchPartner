@@ -100,7 +100,14 @@ class TestConfig(unittest.TestCase):
     def test_shell_ident(self):
         self.assertEqual(f.shell_ident("Acme Vision"), "ACME_VISION")
         self.assertEqual(f.shell_ident("3D-Recon"), "_3D_RECON")
-        self.assertEqual(f.shell_ident("!!!"), "PROJECT")
+        # All-symbol / all-non-ASCII names fall back to a stable, distinct,
+        # shell-safe stem (not a fixed "PROJECT" that would collide across names).
+        a, b = f.shell_ident("!!!"), f.shell_ident("研究")
+        for v in (a, b):
+            self.assertRegex(v, r"^[A-Z_][A-Z0-9_]*$")
+            self.assertTrue(v.startswith("PROJECT_"))
+        self.assertNotEqual(a, b)
+        self.assertEqual(a, f.shell_ident("!!!"))  # deterministic
 
     def test_derived_vars(self):
         c = ctx()

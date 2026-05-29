@@ -49,8 +49,8 @@ Before writing a prompt:
 6. State the task scope and the edit scope.
 7. Use subtract-first constraints when extending templates.
 8. Verify smoke expected values against current files.
-<!-- if:SRC_MIRROR_ENABLED=yes -->9. Do not confuse the non-git workspace root {{PROJECT_VAR_BRACE}} with the git docs repo {{REPO_VAR_BRACE}}.<!-- endif -->
-10. If `docs/operations/project-memory-and-instructions.md` is triggered, include a Project Instructions candidate in deliverables.
+9. If `docs/operations/project-memory-and-instructions.md` is triggered, include a Project Instructions candidate in deliverables.
+<!-- if:SRC_MIRROR_ENABLED=yes -->10. Do not confuse the non-git workspace root {{PROJECT_VAR_BRACE}} with the git docs repo {{REPO_VAR_BRACE}}.<!-- endif -->
 <!-- if:ENABLE_PUBLISH_STEP=yes -->11. When the task's result lands in the repo, end the prompt with the Publish step from `docs/operations/prompt-factory.md` (commit + push the docs repo {{REPO_VAR_BRACE}}; never the workspace).<!-- endif -->
 
 ## 5. Confidence Levels

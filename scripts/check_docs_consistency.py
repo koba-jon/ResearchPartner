@@ -173,6 +173,9 @@ class Guard:
                     continue
                 if target.startswith("<") and target.endswith(">"):
                     target = target[1:-1]
+                else:
+                    # drop an optional markdown link title:  path "title" / path 'title'
+                    target = re.split(r"""\s+["']""", target, 1)[0]
                 resolved = os.path.normpath(os.path.join(os.path.dirname(abspath), target))
                 if not os.path.exists(resolved):
                     self.fail("%s: missing markdown link target %s" % (rel, raw_target))
@@ -303,7 +306,10 @@ def _load_instance_config(root):
         cfg = fw.derive(dict(fw.DEFAULT_CONFIG))
     man_path = os.path.join(root, "ownership.json")
     if os.path.isfile(man_path):
-        cfg["_manifest"] = fw.load_manifest(man_path)
+        try:
+            cfg["_manifest"] = fw.load_manifest(man_path)
+        except fw.ConfigError as exc:
+            fw.die(str(exc))
     return cfg
 
 
