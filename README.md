@@ -30,7 +30,7 @@ Every request to the Research Partner resolves to one mode: **six lifecycle mode
 ## Prerequisites
 
 - **Python 3.8+** and **git** (no third-party Python packages).
-- A **Claude account with Projects** (for the Project seat) and **Claude Code** installed (for the execution seat).
+- A **Claude Chat with Projects** (for the Project seat) and **Claude Code** installed (for the execution seat).
 - A place for a **private** git repo on your account (GitHub or similar). Your research is private; only the *base* template is public.
 
 ## Setup, step by step
