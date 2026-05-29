@@ -1,0 +1,142 @@
+# Prompt Factory
+
+Patterns for writing Claude Code / Codex prompts for {{PROJECT_NAME}}. A prompt is a **contract**, not a wish: it names the paths, the single change, what may and may not be edited, and how the result will be checked. A vague prompt produces vague work; the cost of precision here is repaid many times over in the result.
+
+## 1. Pre-Prompt Checklist
+
+1. Re-read `docs/entrypoint.md` section 0 and put the path-variable header (section 2) at the top of the prompt.
+2. Name the task mode (`docs/operations/operation-modes.md`) and the single {{EXPERIMENT_UNIT_LABEL}} or change it touches. One prompt, one intent.
+3. State the edit scope: which files may change, which are read-only.
+4. Prefer subtracting or simplifying before adding.
+5. Check the relevant operational constraints (`docs/operations/rules/operational-constraints.md`).
+6. Verify every path, code token, and number against current files with rg / view — never from memory.
+7. Give a concrete verification step the executor can run and you can check.
+
+## 2. Canonical Header
+
+Define these at the top of every Claude Code / Codex prompt, then use brace-form paths afterward. This block is mirrored byte-identically in `docs/entrypoint.md` section 0; the consistency guard enforces it.
+
+```bash
+<!-- include: _fragments/canonical-header.txt -->
+```
+
+## 3. The Prompt Contract (generic skeleton)
+
+Every prompt, whatever the mode, fills these slots. The mode-specific skeletons below are specializations of this one.
+
+```text
+<path-variable header from section 2>
+
+Context: <one or two lines: which {{EXPERIMENT_UNIT_LABEL}} / file / goal>.
+Task: <the single change to make>.
+Edit scope: <files that may change>. Read-only: <files that must not change>.
+Constraints: <relevant OCs by id>.
+Deliverable: <what to produce, and where under ${CLAUDE_DIR}/{TASK_ID}/>.
+Verification: <command to run / output to inspect / criterion to meet>.
+```
+
+`TASK_ID` is `YYYYMMDD-HHMM-XXXX`, with the timestamp resolved by a real `date` call at generation time (never a placeholder), so the audit chain holds. See `docs/operations/directory-map.md`.
+
+## 4. Mode-Specific Skeletons
+
+Investigate, Design, and Write are usually done in Claude Chat and rarely need a Claude Code prompt. The modes below do.
+
+### 4.1 Implement (SRC)
+
+```text
+<header>
+Context: implement <change> for {{EXPERIMENT_UNIT_LABEL}} <id>.
+Task: <the one source change>. Gate it behind a flag, default OFF, so the
+  default path is unchanged (bit-identical) until explicitly enabled.
+Edit scope: <specific source files>. Read-only: everything else.
+Constraints: OC-2 (source read-only outside scope), OC-5 (brace paths), OC-7 (state sync).
+Deliverable: the patch + a one-line summary of what changed and what stayed identical.
+Verification: <import/build succeeds>; with the flag OFF, <a baseline check> is unchanged.
+```
+
+### 4.2 Experiment (RUN, then record)
+
+```text
+<header>
+Context: run {{EXPERIMENT_UNIT_LABEL}} <id>; success criteria are locked in
+  docs/project/project-status.md.
+Task: run <command/config>. Do not change source. Write outputs to a NEW dir distinct
+  from prior {{EXPERIMENT_UNIT_LABEL}} outputs.
+Read-only: all source and prior results.
+Deliverable: the result files + the metrics, under ${CLAUDE_DIR}/{TASK_ID}/outputs/.
+Verification: each locked criterion judged mechanically against its threshold.
+```
+Recording the result into the docs is the closing step of Experiment mode (see `docs/operations/session-kickoff.md`): numbers to `docs/evaluation/comparison.md`, verdict + next task to `docs/project/project-status.md`, a row to `docs/project/themes/theme-index.md` and a body to `docs/project/themes/theme-bodies.md`, lever state to `docs/method/algorithmic-levers.md`; then `make docs-check`.
+
+### 4.3 Analyze
+
+```text
+<header>
+Context: <question to answer> from existing artifacts at <paths>.
+Task: analyze read-only. Existing files must not change; write only under ${CLAUDE_DIR}/{TASK_ID}/.
+Deliverable: outputs/analysis_report.md (data separate from interpretation; confidence levels).
+Verification: include the critical-verification pass from docs/operations/analysis-mode.md
+  (state the claim, try to refute it, report what survives).
+```
+
+### 4.4 Result Ingestion (when a result lands without a fresh run)
+
+```text
+<header>
+Ingest the result at <path>. Do not re-run the experiment. Update, in order:
+docs/evaluation/comparison.md (numbers), docs/project/project-status.md (verdict, next task),
+docs/project/themes/theme-index.md (+ body in theme-bodies.md), docs/method/algorithmic-levers.md
+(lever state). Then run make docs-check.
+```
+
+### 4.5 Docs Update
+
+```text
+<header>
+Change class: <from docs/operations/consistency-guard.md>.
+Edit first: <file>. Cascade: <files from entrypoint section 5>.
+Run make docs-check from the docs repo and report the result before finishing.
+```
+
+## 5. A Worked Example (illustrative)
+
+A filled-in Implement prompt for a generic "add a gated alternative objective" change:
+
+```text
+<path-variable header>
+Context: implement an alternative training objective for {{EXPERIMENT_UNIT_LABEL}} 7.
+Task: add a function `alt_objective(...)` and a flag `--objective={default,alt}` (default
+  `default`). With `default`, behavior is bit-identical to today.
+Edit scope: ${PROJECT_VAR_BRACE}/src/objective.py, ${PROJECT_VAR_BRACE}/src/options.py.
+  Read-only: everything else.
+Constraints: OC-2, OC-5, OC-7. Subtract-first: reuse the existing loss plumbing, add no new module.
+Deliverable: the patch + a note confirming the default path is unchanged.
+Verification: `python -c "import src.objective"` succeeds; a 1-step run with `--objective=default`
+  produces the same loss value as before (paste both).
+```
+
+## 6. Prompt Smells (anti-patterns)
+
+- **No edit scope** -> the executor refactors files you did not mean to touch.
+- **Two changes in one prompt** -> you cannot attribute the result to either. Split them.
+- **"Improve X"** with no criterion -> there is nothing to verify. State the target.
+- **Numbers or paths from memory** -> stale. Verify with rg / view first.
+- **Add-first** ("also add a helper just in case") -> bias and dead code. Subtract first.
+- **No verification step** -> you are trusting, not checking. Always give one.
+
+## 7. Verification Ladder
+
+Match the verification cost to the change: (1) it imports / builds; (2) a tiny dry-run executes; (3) the default path is unchanged when a new option is off; (4) a small fixed subset gives the expected metric; (5) the full criterion is met. Ask for the cheapest rung that actually proves the claim.
+
+<!-- if:ENABLE_AUTO_MODE=yes -->
+## 8. Auto Mode Campaign Skeleton
+
+```text
+<path-variable header>
+Campaign goal: <what to explore> on {{EXPERIMENT_UNIT_LABEL}} <id>.
+Workspace: ${CLAUDE_DIR}/{TASK_ID}/workspace/ (copy source in; never edit the originals).
+Tiers: <smoke / quick / full ladder>. Fair comparison: same data subset, seed, budget per tier.
+Log every run to results.jsonl with id, config, metrics, decision (keep/discard/promote).
+Stop conditions: <budget or no-improvement rule>. See docs/operations/auto-mode.md.
+```
+<!-- endif -->

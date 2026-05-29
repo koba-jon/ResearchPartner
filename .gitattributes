@@ -1,0 +1,9 @@
+# Normalise line endings so byte-identical mirror-block checks are stable
+# across platforms (a CRLF from a Windows editor would otherwise break them).
+* text=auto eol=lf
+*.py text eol=lf
+*.md text eol=lf
+*.txt text eol=lf
+*.json text eol=lf
+Makefile text eol=lf
+.githooks/pre-commit text eol=lf

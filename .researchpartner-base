@@ -1,0 +1,6 @@
+{
+  "base": true,
+  "min_init_version": 1,
+  "base_url": "",
+  "_about": "Presence of this file marks the unconfigured ResearchPartner base. init.py refuses to configure in place while it exists (use --adopt-base-as-upstream or --force); the pre-commit hook routes to base lint; init.py deletes this file when it configures a clone. Set base_url after publishing the base so init can recognise an accidental clobber of the base itself."
+}

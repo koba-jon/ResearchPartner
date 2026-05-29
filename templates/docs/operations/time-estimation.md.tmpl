@@ -1,0 +1,110 @@
+# Empirical Task Time Estimation
+
+This file defines how the {{ROLE_TERM}} estimates task wall-time. Time estimation is an independent operating concept: it applies to analysis, source edits, docs updates, result ingestion, prompt writing, experiment runs, and maintenance. Analysis mode is only one consumer of this file. The goal is to replace intuition-based estimates with empirical estimates from prior {{PROJECT_NAME}} work.
+
+## 1. Core Rule
+
+Estimate time from comparable past work and measured units, not from how heavy a task feels.
+
+Required:
+
+- Separate expected wall-time, range, and max budget.
+- Treat "N hours is okay" as a max budget, not an expected duration.
+- Cite the anchor tasks or measured rates used for a non-trivial estimate.
+- If no anchor exists, say the estimate is a provisional prior and record the result afterward.
+- After completion, append a ledger row when the task produced useful new timing evidence.
+
+Forbidden:
+
+- inflating wall-time because tensor work, figures, or code search feels large.
+- claiming literal elapsed work that was not measured.
+- reusing an old estimate after actual wall-time disproved it.
+
+## 2. Estimate Types
+
+| Type | Meaning |
+|---|---|
+| Expected wall-time | the best current prediction from empirical anchors |
+| Range | a reasonable uncertainty interval |
+| Max budget | a hard ceiling or a user-provided allowance |
+| Effort depth | a work-unit contract independent of literal time |
+| Runtime / compute time | a measured command, training, or parse duration |
+
+Do not mix these. "N is OK" means a max budget, not the expected time. A long "effort-depth" framing can coexist with a much shorter actual wall-time.
+
+## 3. Procedure
+
+For any non-trivial task:
+
+1. Classify the task type.
+2. Choose sizing units.
+3. Find comparable timing records in this file, in `docs/project/themes/theme-index.md`, and in task reports under `${CLAUDE_DIR}`.
+4. Estimate the expected wall-time from the nearest anchors.
+5. Add a range based on anchor density and uncertainty.
+6. State the max budget separately if the user supplied one.
+7. After completion, record the actual time if it improves the ledger.
+
+## 4. Sizing Units By Task Type
+
+| Task type | Primary units |
+|---|---|
+| Analysis | `N_{{ANALYSIS_RECORD_LABEL}}`, artifact count, data-file count |
+| Docs update | docs touched, sections rewritten, cross-reference count |
+| Source implementation | files touched, functions changed, test scope |
+| Experiment run | commands, classes, epochs, images, file sizes |
+| Result ingestion | result files parsed, metric tables updated, cascade count |
+| Prompt writing | docs read, constraints, smoke checks |
+
+If a task crosses types, estimate each part separately and sum them with a small integration overhead.
+
+## 5. Empirical Model
+
+Use the strongest available model:
+
+1. Direct repeat: same task family and similar units.
+2. Unit-rate estimate: measured minutes per record, file, class, doc, or command.
+3. Nearest-neighbor estimate: the median of 2-5 similar tasks.
+4. Provisional prior: only when the ledger has no relevant anchor.
+
+For a repeated family, prefer the median actual time over the mean, since one blocked task distorts the mean.
+
+| Confidence | Requirement |
+|---|---|
+| High | 3 or more recent similar anchors, same executor and environment |
+| Medium | 1-2 relevant anchors, or one strong measured rate |
+| Low | no close anchor, changed environment, or unknown compute path |
+
+If actual over expected falls outside `[0.5, 2.0]`, record the reason; if it changes a stable rule, update this file.
+
+Example (illustrative). Estimating a docs update touching 6 files: the ledger shows two similar cascades at about 4 and 6 minutes (nearest-neighbor) -> expected about 5 min, range 4-8, Medium confidence. If {{USER_NAME}} said "an hour is fine", that 60 min is the max budget, not the estimate.
+
+## 6. Effort-Depth Calibration
+
+When {{USER_NAME}} asks for "15-minute analysis", "3-hour analysis", or "think for a day", first decide whether the phrase is a wall-time limit, a max budget, or an effort-depth request.
+
+- A literal deadline: obey it as max wall-time.
+- "N hours is okay": treat as a max budget.
+- "Analyze for N hours": treat as effort depth, then estimate the actual wall-time separately.
+
+| Effort phrase | Min exploration | Min rejections | Required output |
+|---|---:|---:|---|
+| 15-minute | 5 | 3 | conclusion, short evidence, next step |
+| 30-minute | 10 | 6 | decomposition, ranked candidates, rejected alternatives |
+| 1-hour | 18 | 12 | evidence table, top retained, risks, next actions |
+| 3-hour | 30 | 20 | full report, top retained, failure modes, prioritized actions |
+| 1-day | 70 | 50 | adversarial review, rejection log, roadmap |
+
+These counts describe depth, not literal waiting time. Complete the work units, report actual blockers, and stop.
+
+## 7. Ledger
+
+Append a row when an explicit estimate was given, the task took more than about 10 minutes, actual differed from expected by more than 2x, a new task family appeared, or the task produced a reusable measured rate.
+
+| `TASK_ID` | task type | units | estimate / budget | actual wall-time | useful rate / lesson | source |
+|---|---|---|---|---|---|---|
+| `20260529-0754-ANALYZE-example` | analysis | `N_{{ANALYSIS_RECORD_LABEL}}=10` | expected ~30 min, max ~100 min | ~25 min | about 2.5 min per record for an artifact-backed report | example seed row |
+
+Default analysis formula, until superseded by stronger anchors: expected = `N_{{ANALYSIS_RECORD_LABEL}} x 3 min`; max = `N_{{ANALYSIS_RECORD_LABEL}} x 10 min`. This is LLM-bound; wall-time is dominated by token generation, not by per-record compute. It is not valid for training or long experiment runs.
+
+<!-- if:COMPUTE_ENV=colab -->GPU vs CPU note: a GPU run can be many times faster than the same job on CPU, so an estimate built on a GPU anchor must not be reused for a CPU fallback (and the reverse). Record which device produced the anchor.<!-- endif -->
+<!-- if:COMPUTE_ENV=local-cpu -->Local-CPU note: per-iteration wall-time scales with the working-set size; pull the relevant size per target before estimating, and do not extrapolate from a single small case.<!-- endif -->

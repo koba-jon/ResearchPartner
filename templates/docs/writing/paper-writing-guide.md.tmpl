@@ -1,0 +1,78 @@
+# README / Technical Report Guide
+
+How to turn {{PROJECT_NAME}} results into prose for a README or technical report. The domain is {{INTENT_DOMAIN}} and the goal is {{INTENT_GOAL}}. This is guidance the {{ROLE_TERM}} applies when drafting any writeup; keep every claim tied to the numbers in `docs/evaluation/comparison.md` and inside the safe-claim boundary in section 4.
+
+## 1. Tone
+
+The writeup earns trust by being precise and falsifiable, not by sounding impressive.
+
+- State what was measured and under what conditions; let the numbers carry the claim. "Reduced error from 0.18 to 0.12 on the held-out set" beats "dramatically improved accuracy".
+- Avoid "novel", "state-of-the-art", "significantly", and "robust" unless a number or a citation backs the word. "Significant" means a stated test at a stated level, not "large".
+- Name the baseline every time you report an improvement, and point to the column in `docs/evaluation/comparison.md` that holds the figure.
+- Quantify with the unit and the set: "+4.1 points macro-F1 on the 2k-item test split", not "much better".
+- Prefer the active, past tense for what was done ("we reweighted the loss") and present tense for what holds ("the reweighted loss rewards rare cases").
+
+## 2. README / Technical-Report Structure
+
+A reusable skeleton. Fill each section from the project docs rather than from memory, so the prose and the source of truth never drift.
+
+1. One-line summary: the problem and the headline result in a single sentence, seeded from {{INTENT_DOMAIN}} and {{INTENT_GOAL}}.
+2. Problem and motivation: what is hard, why it matters, and what a reader gains if it is solved. One short paragraph.
+3. Method: the components and how they fit together, drawn from `docs/method/algorithmic-levers.md` section 1 (the current base). Describe the idea, not every hyperparameter.
+4. Results: the headline metrics from `docs/evaluation/comparison.md`, with the baseline named and the evaluation set stated. One table or a few sentences, not a numbers dump.
+5. Limitations: from section 5 below. State them plainly in the body, not in a footnote.
+6. How to reproduce: the setup and the exact command to run, so a reader can regenerate the headline number.
+
+Keep the order; readers scan for it. A short writeup can fold 2 and 3 together, but never drop limitations.
+
+## 3. Results -> Claims Mapping
+
+Every sentence in the Results and abstract should trace to a row or column in `docs/evaluation/comparison.md`. Before writing a claim, run this discipline:
+
+1. Find the metric, the {{EXPERIMENT_UNIT_LABEL}} column, and the baseline column it is measured against.
+2. Write the claim with the number, the unit, and the set in it.
+3. Check the claim says nothing the table does not support: not a wider population, not a different metric, not a causal "because" the design did not isolate.
+
+A claim with no cell behind it is an opinion; move it to Limitations or future work, or cut it. If two {{EXPERIMENT_UNIT_LABEL}}s changed more than one thing each, you cannot attribute the gain to a single lever; say "the configuration improved X", not "the loss change improved X".
+
+## 4. Safe To Claim Now / Do Not Claim Yet
+
+Separate what the evidence supports from what it does not. The boundary is the line between a defensible writeup and one that gets retracted under review. The pairs below are worked examples across domains; replace them with the project's own once results exist.
+
+Example A (a classification-style task):
+
+- Safe to claim now: "On the 2k-item held-out test split, the reweighted loss raised macro-F1 from 0.71 to 0.78 over the unweighted baseline" -- backed by the relevant column in `docs/evaluation/comparison.md`.
+- Do not claim yet: "The method is more accurate" (which metric, which population?) or "It works on imbalanced data in general" -- only one dataset with one imbalance ratio was tested.
+
+Example B (a systems / efficiency task):
+
+- Safe to claim now: "Median query latency dropped from 240 ms to 180 ms at fixed recall on the same hardware and load" -- the conditions are pinned and measured.
+- Do not claim yet: "The system is 25 percent faster" stated bare -- without fixing recall, hardware, and load the number is not comparable, and tail latency was not measured.
+
+Example C (a modeling / generalization task):
+
+- Safe to claim now: "The model matches the baseline in-distribution while using 40 percent fewer parameters" -- a measured parameter count and an in-distribution metric.
+- Do not claim yet: "The model generalizes better" -- no out-of-distribution {{EXPERIMENT_UNIT_LABEL}} has been run; that belongs in future work until one is.
+
+The pattern: a safe claim names the metric, the set, and the comparison; an unsafe claim quietly widens the population, drops the conditions, or asserts a mechanism the design did not isolate.
+
+## 5. Limitations To State
+
+List the honest limitations rather than burying them; reviewers find them anyway, and stating them first is a credibility signal.
+
+- Conditions not tested: populations, scales, or regimes outside the evaluated set.
+- Assumptions that, if wrong, would invalidate the result: how labels were produced, what the evaluation set represents, what was held fixed.
+- Scope the metrics actually cover: a single headline metric does not speak for cost, fairness, tail behavior, or robustness unless those were measured.
+- Confounds: anything that changed alongside the lever under study and was not isolated.
+
+Cross-check this list against `docs/evaluation/comparison.md` (what was and was not measured) and any rejected directions in `docs/method/algorithmic-levers.md`.
+
+## 6. Anticipated Reader Questions
+
+List the questions a careful reader or reviewer will ask, with a one-line answer or a pointer for each. Drafting these before submission catches weak claims early. Typical examples:
+
+- What exactly is the baseline, and is the comparison fair (same data, same budget)? Point to `docs/evaluation/comparison.md`.
+- What changed between {{EXPERIMENT_UNIT_LABEL}}s, and was only one thing changed at a time?
+- How was the supervision signal or ground truth produced, and could it leak into evaluation?
+- Does the headline metric capture what the goal {{INTENT_GOAL}} actually cares about?
+- What happens in the conditions you did not test? Defer honestly to section 5.

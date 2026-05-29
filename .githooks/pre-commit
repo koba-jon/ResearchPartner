@@ -1,0 +1,17 @@
+#!/bin/sh
+# ResearchPartner pre-commit guard.
+# In a configured clone (docs/ present, no base marker): run the docs guard.
+# In the base repo (.researchpartner-base present): run the base template lint.
+set -eu
+
+changed="$(git diff --cached --name-only --diff-filter=ACMR)"
+
+if printf '%s\n' "$changed" | grep -Eq '^(docs/|templates/|scripts/|ownership\.json|researchpartner\.config\.json$|Makefile|\.githooks/pre-commit|\.gitattributes$|\.gitignore$)'; then
+  if [ -f .researchpartner-base ]; then
+    echo "Running base template lint..."
+    python3 scripts/lint_base.py
+  else
+    echo "Running docs consistency guard..."
+    python3 scripts/check_docs_consistency.py --instance .
+  fi
+fi

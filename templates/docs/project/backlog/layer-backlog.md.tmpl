@@ -1,0 +1,15 @@
+# Component Backlog
+
+## 0. Role Of This File
+
+This file stores candidate levers organized by method component or pipeline stage -- the broad inventory of what could be changed. Near-term issues and the immediate next-{{EXPERIMENT_UNIT_LABEL}} shortlist live in `docs/project/backlog/active-issues.md`. Anything ruled out belongs in the rejected-approach master at `docs/method/algorithmic-levers.md`.
+
+## 1. Candidate Levers By Component / Stage
+
+Group candidates by the component or pipeline stage they touch, so the {{ROLE_TERM}} can reason about scope and keep one change per {{EXPERIMENT_UNIT_LABEL}}. Use generic stage names that fit this project's pipeline (for example: input/data stage, core method/objective stage, inference/aggregation stage, evaluation stage). None recorded yet; the row below is a marked example.
+
+| component / stage | candidate change | expected effect |
+|---|---|---|
+| (example) data / input stage | normalize inputs before training | more stable, comparable baseline |
+
+Keep the "expected effect" honest and falsifiable -- it is the hypothesis the {{EXPERIMENT_UNIT_LABEL}} will test, not a promise. Promote a candidate to the next-{{EXPERIMENT_UNIT_LABEL}} shortlist via `docs/project/backlog/active-issues.md`.

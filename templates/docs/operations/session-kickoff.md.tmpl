@@ -1,0 +1,103 @@
+# Task-Time Protocol
+
+How to act after startup, by mode. Startup order is mastered by `docs/entrypoint.md`; mode classification by `docs/operations/operation-modes.md`. Detailed protocols: analysis in `docs/operations/analysis-mode.md`, <!-- if:ENABLE_AUTO_MODE=yes -->autonomous orchestration in `docs/operations/auto-mode.md`, <!-- endif -->docs upkeep and reflection in `docs/operations/maintenance-mode.md`, prompt templates in `docs/operations/prompt-factory.md`, Project Instructions triggers in `docs/operations/project-memory-and-instructions.md`, time estimation in `docs/operations/time-estimation.md`, docs-edit consistency in `docs/operations/consistency-guard.md`.
+
+Claude Chat replies to {{USER_NAME}} are in {{CHAT_LANG}} by default. Docs and Claude Code prompts stay in {{CODE_LANG}} unless a task requires otherwise.
+
+## 1. Starting Point
+
+Do not inline live state here. The living one-page snapshot is `docs/project/project-status.md` section 2; read it after `docs/entrypoint.md` to learn the current {{EXPERIMENT_UNIT_LABEL}}, the latest verdict, and the next task.
+
+## 2. Per-Mode Protocol
+
+Each block has the same shape: Read (the source-of-truth files to pull) and Check (what to confirm before acting). Mode definitions are in `docs/operations/operation-modes.md`.
+
+### Investigate
+
+Read: `docs/concepts/core-concepts.md`, `docs/writing/related-work-and-positioning.md`, and the codebase area in scope.
+
+Check:
+- This is the only mode that contacts external services; cite every external source and mark confidence.
+- Separate external findings from project facts; record durable findings as an {{ANALYSIS_RECORD_LABEL}}, not in the code docs.
+- Reading the codebase to build understanding is Investigate; reasoning over results is Analyze.
+
+### Design
+
+Read: `docs/project/project-status.md`, `docs/project/backlog/README.md`, `docs/method/algorithmic-levers.md`, `docs/project/themes/theme-index.md`, `docs/evaluation/comparison.md`.
+
+Check:
+- Separate the accepted empirical base from the active, in-flight work.
+- One method-component change per {{EXPERIMENT_UNIT_LABEL}}.
+- Do not revive a recorded rejected approach (see `docs/method/algorithmic-levers.md`).
+
+### Implement
+
+Read: `docs/project/project-status.md`, the relevant file under `docs/method/`, `docs/operations/prompt-factory.md`, the source files in scope.
+
+Check:
+- Separate what is implemented in source from what is only proposed.
+- State the edit scope; name read-only files.
+- Do not reimplement from scratch unless {{USER_NAME}} explicitly requests it.
+
+### Experiment (run, then record)
+
+Read: `docs/operations/directory-map.md`, `docs/evaluation/evaluation-and-visualization.md`, `docs/evaluation/comparison.md`, `docs/project/project-status.md`, `docs/operations/prompt-factory.md`.
+
+Check before running:
+- A file-dependency inventory; output dirs distinct from prior {{EXPERIMENT_UNIT_LABEL}} outputs.
+- The success criteria are locked in `docs/project/project-status.md` before the run.
+
+Recording is the closing step of this mode (one full ingestion pass):
+1. Add the new numeric columns to `docs/evaluation/comparison.md`; compute the mean and deltas against the accepted base.
+2. Judge each locked criterion mechanically against its threshold; record the verdict.
+3. Update `docs/project/project-status.md` (verdict + next task).
+4. Add a compact row to `docs/project/themes/theme-index.md` and a body to `docs/project/themes/theme-bodies.md`.
+5. Update `docs/method/algorithmic-levers.md` and `docs/project/backlog/README.md`.
+6. Cascade per `docs/entrypoint.md` section 5, then run `make docs-check`.
+
+Keep numeric tables only in `docs/evaluation/comparison.md`. Never write a verdict while the result files are absent.
+
+### Analyze
+
+Read: `docs/operations/analysis-mode.md` (when {{USER_NAME}} says "analysis mode"), plus the target: method (`docs/concepts/core-concepts.md`, `docs/method/`), metrics (`docs/evaluation/comparison.md`), prior judgment (`docs/project/themes/theme-index.md`), or artifacts.
+
+Check:
+- Existing files are read-only; artifacts go under `${CLAUDE_DIR}/{TASK_ID}/`.
+- Apply the critical-verification discipline (try to refute the conclusion) from `docs/operations/analysis-mode.md`.
+
+### Write
+
+Read: `docs/writing/paper-writing-guide.md`, `docs/concepts/core-concepts.md`, `docs/evaluation/comparison.md`, `docs/writing/related-work-and-positioning.md`.
+
+Check:
+- Only claim what the recorded results support (claim-safety in the writing guide).
+- Numbers come from `docs/evaluation/comparison.md`; do not restate them divergently.
+
+<!-- if:ENABLE_AUTO_MODE=yes -->
+### Auto
+
+Read: `docs/operations/auto-mode.md`, `docs/project/project-status.md`, `docs/method/algorithmic-levers.md`, `docs/project/backlog/README.md`, `docs/operations/prompt-factory.md`.
+
+Check:
+- Chat designs the bounded campaign and writes the Claude Code prompt; Code runs it in an isolated workspace and never edits the originals.
+- Same data subset, seed, and budget define fair comparison within a tier.
+- The deliverable is a patch proposal plus evidence, not an in-place source edit.
+<!-- endif -->
+
+### Maintain
+
+Read: `docs/operations/maintenance-mode.md`, `docs/operations/consistency-guard.md`, `docs/operations/shared-instructions.md`, `docs/project/themes/theme-index.md`.
+
+Check:
+- For reflection: name the failure or improvement with evidence, then cascade it into an operational constraint, an {{ANALYSIS_RECORD_LABEL}}, or a target-doc edit.
+- For large-scale cleanup: declare the scope, preserve settled decisions and recorded rejected approaches, and run `make docs-check`.
+
+### Utility: Time Estimate
+
+When {{USER_NAME}} asks how long something will take or gives a budget: read `docs/operations/time-estimation.md`. Separate expected wall-time, range, and max budget; estimate from empirical anchors; "N hours is okay" is a max budget, not the expected time.
+
+## 3. Pre-Prompt Checklist
+
+When a task produces a Claude Code prompt, copy the canonical path-variable header from `docs/entrypoint.md` section 0 (templates in `docs/operations/prompt-factory.md`). Confirm: the edit scope is stated with read-only files named; paths are in brace form such as `{{PROJECT_VAR_BRACE}}/src/`; tokens/paths/numbers were verified with rg or view, not memory; no git commit or push against `{{PROJECT_VAR_BRACE}}`; the smoke check matches current files; and there is a concrete verification step.
+
+Time-estimate note: separate LLM-bound estimates (Claude Code work over local files, dominated by token generation) from compute-bound estimates (training and long runs, dominated by hardware). See `docs/operations/time-estimation.md`.

@@ -1,0 +1,45 @@
+# Method Overview
+
+How {{PROJECT_NAME}} works: the method components, how ground truth or labels are produced, and how the objective is designed. The bodies below are placeholders for the {{ROLE_TERM}} to fill in. The lever inventory and the master list of rejected approaches live in `docs/method/algorithmic-levers.md`.
+
+## 1. Method Components
+
+The pieces that make up the method, in the order data flows through them. Each row should match one row of the causal decomposition in `docs/concepts/core-concepts.md` section 3, so a failure traced to a component there lands on a real piece here. Fill in the table for this project; the rows below are illustrative examples from different domains.
+
+| Component | Role | Notes |
+|---|---|---|
+| Preprocessing (illustrative, ML) | Converts raw inputs into model-ready form | Changing it shifts the input distribution for everything downstream |
+| Reagent prep (illustrative, wet-lab) | Mixes and calibrates reagents before the assay runs | A new lot changes the baseline signal; treat lot as a logged variable |
+| Cache layer (illustrative, systems) | Serves hot results without recomputation | A stale-eviction change trades hit rate against freshness |
+
+## 2. Ground Truth / Label Generation
+
+PLACEHOLDER. Describe how the supervision or reference signal is produced: where it comes from, how it is generated or annotated, and any synthesis or augmentation applied. State the assumptions that, if wrong, would invalidate every result, because this is the most common silent source of error. If labels are generated programmatically, name the exact procedure so a {{EXPERIMENT_UNIT_LABEL}} can reproduce them bit for bit.
+
+Checklist: (a) source of truth named; (b) generation or annotation procedure reproducible; (c) the assumption that would invalidate results stated explicitly; (d) known label noise or measurement error quantified or flagged.
+
+Example (illustrative): a perception project labels objects with a heuristic auto-labeler, then hand-audits 200 frames; the stated assumption is "auto-labels agree with human labels above 95 percent on the audited slice." If a {{EXPERIMENT_UNIT_LABEL}} regresses, re-checking this assumption comes before blaming the model.
+
+## 3. Objective / Criterion Design
+
+PLACEHOLDER. Describe the objective the method optimizes or the criterion that decides success: the loss, score, or acceptance rule, what it rewards and penalizes, and its known failure modes (for example, an imbalance that lets a trivial solution score well). Record the currently accepted objective here; record rejected objective variants in `docs/method/algorithmic-levers.md` section 3.
+
+Stress-test the objective by asking what the laziest solution that maximizes it looks like. If that solution is useless (predict the majority class, return the cached answer, report the control wells), the objective needs a guard or a counter-metric in `docs/evaluation/evaluation-and-visualization.md` section 1.
+
+Example (illustrative): an imbalanced classification objective lets "always predict negative" score 0.95 accuracy. The guard is to track per-class recall as a counter-metric, so the trivial solution is visibly rejected even when headline accuracy looks high.
+
+## 4. Settled vs Under Consideration
+
+What is decided and what is still open. Move items from the second list to the first only when a {{EXPERIMENT_UNIT_LABEL}} verdict supports it (verdict vocabulary in `docs/evaluation/evaluation-and-visualization.md` section 2).
+
+Settled:
+
+- PLACEHOLDER. List components and choices treated as fixed for now, each with the {{EXPERIMENT_UNIT_LABEL}} id that settled it.
+
+Under consideration:
+
+- PLACEHOLDER. List open questions and candidate changes; promote them to {{EXPERIMENT_UNIT_LABEL}}s via `docs/project/backlog/README.md`.
+
+Note: the master list of rejected approaches, with the reason and evidence for each, lives in `docs/method/algorithmic-levers.md` section 3. Do not re-propose a rejected approach without new evidence that addresses the original reason.
+
+Worked example (illustrative): the objective in section 3 lets a model score well by ignoring rare cases. A {{EXPERIMENT_UNIT_LABEL}} swaps the objective for a reweighted variant, holding every component in section 1 fixed. If the reweighted variant improves the headline metric in `docs/evaluation/comparison.md` without harming the counter-metrics, it moves from "Under consideration" to "Settled"; if it regresses, it is recorded in `docs/method/algorithmic-levers.md` section 3 so it is not revived.

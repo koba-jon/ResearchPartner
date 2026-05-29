@@ -1,0 +1,89 @@
+# Auto Mode
+
+Auto mode lets the {{ROLE_TERM}} chain the lifecycle modes autonomously toward a goal, inside hard safety boundaries. The most common use is an autonomous research campaign that loops Design, Implement, Experiment, and Analyze until a budget expires. Auto mode never edits existing project files in place.
+
+## 1. Trigger
+
+Use Auto mode when {{USER_NAME}} asks to explore autonomously, to improve {{PROJECT_NAME}} for a time budget, to run experiments for N minutes or hours, or for a prompt that keeps researching until a budget expires. If the request only asks for a single next idea, use Design mode (`docs/operations/session-kickoff.md`) instead.
+
+## 2. Which Modes Auto May Chain
+
+| Chained mode | Risk | Rule |
+|---|---|---|
+| Investigate, Design, Analyze | low (read-only) | may run freely within the budget |
+| Implement, Experiment | high (mutating + compute) | only inside an isolated workspace; never touch the originals |
+| Write, Maintain | excluded | Auto does not autonomously rewrite prose or project docs; it returns proposals for review |
+
+Auto inherits the strictest safety property of whatever it chains.
+
+## 3. Responsibility Split
+
+| Actor | Responsibility |
+|---|---|
+| {{USER_NAME}} | chooses the campaign intent, budget, and any preferred target |
+| Claude Chat | reads current docs, designs the bounded campaign, writes the Claude Code prompt |
+| Claude Code | creates an isolated workspace, copies source in, mutates only the copy, runs isolated experiments, logs outcomes, returns patch proposals |
+
+Claude Chat must not hand off an open-ended "do research" prompt. It produces a bounded contract: scope, budget, comparison tier, logging, and stop conditions.
+
+## 4. Workspace Isolation
+
+All mutation happens under a task workspace; existing source, data, results, and runners stay read-only:
+
+```text
+${CLAUDE_DIR}/{TASK_ID}/
+  workspace/src/
+  runs/exp001/
+  patches/best.patch
+  outputs/results.jsonl
+  outputs/campaign_summary.md
+```
+
+Copy the needed source into `workspace/src/` and never edit the originals. The final deliverable is a patch proposal plus evidence, not an in-place source edit.
+
+## 5. Budget And Fair Comparison
+
+Time controls when the campaign stops; the data subset, seed, and per-tier budget control fair comparison.
+
+- The user-specified time is the campaign budget, not the per-experiment comparison unit.
+- Experiments may be compared only within the same tier (a tier fixes the data subset, seed, budget, and metric parser).
+- Promotion across tiers is allowed; a direct cross-tier comparison is not final evidence.
+
+## 6. Evaluation Ladder
+
+| Tier | Purpose | Typical scope |
+|---|---|---|
+| smoke | reject broken source quickly | import, grep, tiny dry-run checks |
+| quick | catch obvious bad ideas | a small fixed subset, a short budget |
+| full | candidate verdict evidence | the full subset, the full budget |
+
+## 7. Keep, Discard, Promote
+
+Each experiment gets exactly one decision: `crash` (failed; keep logs only), `discard` (worse than baseline in-tier), `keep_candidate` (promising, not yet full-tier evidence), `promote` (advances a tier), or `best_patch` (strongest patch at campaign end). Promotion criteria are fixed before the first run: a primary metric, one or more veto metrics, and a hard caution on per-case regression.
+
+## 8. Result Logging
+
+Every attempt appends one JSON object to `outputs/results.jsonl`:
+
+```json
+{
+  "id": "exp001",
+  "config": {"tier": "quick", "data_subset": "...", "seed": 42, "budget": "...", "changed_files": ["workspace/src/..."], "idea": "..."},
+  "metrics": {"primary": null, "veto": null},
+  "decision": "keep_candidate"
+}
+```
+
+If a run crashes, metrics may be null, but the error summary and log path must be recorded.
+
+## 9. Claude Code Prompt Contract
+
+The handoff prompt includes: the canonical path-variable header from `docs/entrypoint.md` section 0; the budget and a stop margin; the target and candidate family; the active tier (data subset, seed, budget, metric parser); the workspace layout from section 4; read-only vs writable paths with source-copy steps; the keep/discard/promote criteria; the `results.jsonl` schema; the stop conditions; and the final deliverables. Use `docs/operations/prompt-factory.md` for the skeleton.
+
+## 10. Stop Conditions
+
+Stop and summarize when any fires: remaining time below the safety margin; {{USER_NAME}} interrupts; repeated crashes exceed the limit; no same-tier improvement after the attempt limit; required data or checkpoints missing; or the next tier cannot fit the remaining budget. Stopping is not failure; the required output is a faithful campaign summary with logs, patches, and the next recommended action.
+
+## 11. Forbidden Actions
+
+Auto mode must not: edit existing project files in place; run git commit or push against `{{PROJECT_VAR_BRACE}}`; use a test-label oracle for selection; revive a recorded rejected approach; hand-pick per-case hyperparameters to flatter a result; compare metrics across different tiers as final evidence; or overwrite existing results or checkpoints. Adopting a candidate into `{{PROJECT_VAR_BRACE}}` is a separate explicit task (it returns `patches/best.patch` and `outputs/campaign_summary.md`).

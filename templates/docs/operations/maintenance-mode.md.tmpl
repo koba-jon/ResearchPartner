@@ -1,0 +1,59 @@
+# Maintenance Mode
+
+Last updated: template seed, N=0
+
+Maintain mode keeps the project healthy along two axes: **docs upkeep** (consistency and large-scale cleanup) and **reflection** (turning failures into prevention rules). The goal is not more text; it is better future task success. It is not a startup file; enter it on an explicit signal or a detected problem.
+
+## 1. Triggers
+
+Enter Maintain mode when: docs need reordering or renaming across many files; stale phrasing or duplication has accumulated; cross-references have broken; the Project Instructions drift from the docs; {{USER_NAME}} points out an operational mistake or scope creep; code and docs drift apart; prompt paths or smoke values were written from memory; or the same failure appears at least twice.
+
+## 2. Docs Upkeep (large-scale cleanup)
+
+### 2.1 Discipline
+
+- Declare the scope before editing, and keep it bounded.
+- Touch one concern per pass; do not mix a cleanup with new research claims.
+- Preserve settled decisions and recorded rejected approaches.
+- Run `make docs-check` at the end and fix every failure.
+
+### 2.2 No-Touch Zones
+
+Do not rewrite confirmed {{ANALYSIS_RECORD_LABEL}} bodies, recorded rejected approaches, or settled method mechanics during a cleanup pass. Those change only through a normal, deliberate edit.
+
+### 2.3 Activation Protocol
+
+State the trigger, declare the scope, check for conflicts with in-flight work, do the work in one pass, run the guard, then add a row to the log below and bump the header N.
+
+### 2.4 Required Smoke Checks
+
+After a pass: search for the old names you removed, confirm active routes still resolve, confirm the two mirror blocks still match, and run `make docs-check`.
+
+## 3. Reflection (failure to rule)
+
+### 3.1 Five-Step Ritual
+
+1. Failure name: name the failure in one sentence.
+2. Evidence: cite a grep, a diff, a number, or {{USER_NAME}}'s direct correction.
+3. Classify: algorithmic, operational, communication, or documentation.
+4. Rule: convert it into a concrete next-time behavior.
+5. Cascade: decide whether to update `docs/operations/rules/`, `docs/operations/shared-instructions.md`, `docs/project/themes/theme-index.md`, `docs/operations/session-kickoff.md`, or the target docs. Run `make docs-check` after any docs edit.
+
+### 3.2 {{ANALYSIS_RECORD_LABEL}} vs Operational Constraint
+
+Open a {{ANALYSIS_RECORD_LABEL}} (a row in `docs/project/themes/theme-index.md` plus a body in `docs/project/themes/theme-bodies.md`) when an {{EXPERIMENT_UNIT_LABEL}} verdict or a major mechanism interpretation changes, a lever becomes active or rejected, or a recurring failure appears. Add an operational constraint to `docs/operations/rules/operational-constraints.md` when a recurring rule must be preserved and violating it would damage deliverables. Do not open either for a one-off typo.
+
+### 3.3 Output Unit And Restraint
+
+Reflection usually produces one small durable artifact: one checklist line, one operational-constraint addition, one {{ANALYSIS_RECORD_LABEL}} paragraph, one prompt-template fix, or one routing fix in `docs/entrypoint.md`. Do not add a new constraint every time; absorb into an existing one when possible. Low-risk docs-consistency fixes can be made directly. When the Instructions text is affected, produce one candidate for {{USER_NAME}} to paste (this framework does not use Project Memory).
+
+### 3.4 Worked Lesson: Status Drift
+
+Symptom: the docs described a method component as a future candidate while the current source already implemented it. Lesson: verify current code and runner smoke tokens before writing {{EXPERIMENT_UNIT_LABEL}} status; separate the states source-implemented / runner-created / RUN-completed / verdict-confirmed; cascade a status correction first to `docs/entrypoint.md`, `docs/project/project-status.md`, and `docs/operations/session-kickoff.md`.
+
+## 4. Activation Log
+
+| N | Date | Scope | Result |
+|---|---|---|---|
+
+When you add the first row, set its N to 1 and update the header to `N=1`. The guard checks that the header N equals the maximum row N.

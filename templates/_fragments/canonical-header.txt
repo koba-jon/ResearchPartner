@@ -1,0 +1,5 @@
+# Path variables (canonical SoT = docs/entrypoint.md section 0)
+{{PROJECT_VAR}}="{{PROJECT_ROOT}}"
+{{REPO_VAR}}="{{FRAMEWORK_REPO_DIR}}"
+CLAUDE_DIR="{{CLAUDE_DIR}}"
+<!-- if:COMPUTE_ENV=colab -->{{COMPUTE_DRIVE_VAR}}="{{COMPUTE_DRIVE}}"<!-- endif -->

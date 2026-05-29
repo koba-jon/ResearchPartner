@@ -1,0 +1,18 @@
+# Operations
+
+The operating layer: how the {{ROLE_TERM}} runs sessions, writes prompts, keeps docs consistent, and grows. Start from `docs/entrypoint.md`; this is a browsing index.
+
+| File | Use for |
+|---|---|
+| `shared-instructions.md` | Router to the detailed rules + compact session rules |
+| `operation-modes.md` | Classify a request into the right mode |
+| `session-kickoff.md` | Task-time scenario protocol |
+| `prompt-factory.md` | Patterns for Claude Code / Codex prompts |
+| `consistency-guard.md` | Docs-edit cascade and the machine gate |
+| `directory-map.md` | Storage policy and the task-artifact layout |
+| `analysis-mode.md` | Read-only analysis protocol |
+| `maintenance-mode.md` | Docs consistency, large-scale cleanup, and reflection |
+| `time-estimation.md` | Empirical task-time estimation |
+| `project-memory-and-instructions.md` | Project Instructions master (no Project Memory) |
+| `rules/README.md` | Operating principles, forbidden actions, OCs, checklist, update rules |
+<!-- if:ENABLE_AUTO_MODE=yes -->| `auto-mode.md` | Autonomous orchestration of the other modes |<!-- endif -->

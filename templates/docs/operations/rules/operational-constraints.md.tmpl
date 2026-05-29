@@ -1,0 +1,108 @@
+# Operational Constraints
+
+## 0. Role Of This File
+
+This file is the canonical OC registry. Use it when writing prompts, checking task boundaries, or adding a recurring operational rule.
+
+## 1. OC-1: `storage_policy_local_master`
+
+Artifacts such as checkpoints, results, and banks are mastered on the local workspace.
+
+Implications:
+
+<!-- if:COMPUTE_ENV=colab -->- The transient {{COMPUTE_ENV}} drive may be read only for files guaranteed to exist there.<!-- endif -->
+- Aggregation and verdicts are local-master tasks.
+- Runners need file dependency inventories.
+
+## 2. OC-2: `src_read_only_for_eval_tasks`
+
+For pre-evaluation tasks, `{{PROJECT_VAR_BRACE}}/src/` is READ-ONLY. Use task-local copies if needed. Explicit source tasks are the exception.
+
+## 3. OC-3: `project_knowledge_readonly_snapshot`
+
+Project knowledge can be stale. Code-grounded claims must be checked against current repo files with rg / view.
+
+## 4. OC-4: `notebook_and_code_editing_boundary`
+
+{{USER_NAME}} owns placement decisions. Notebook and code edits by Claude Code / Codex are allowed only within the requested task scope.
+
+## 5. OC-5: `path_variables_canonical`
+
+Path variables are mastered in `docs/entrypoint.md` section 0. Use brace form such as `{{PROJECT_VAR_BRACE}}/src/`.
+
+## 6. OC-6: `task_tree_attachment_for_phase_tasks`
+
+Phase tasks named `YYYYMMDD-HHMM-XXXX` should produce `${CLAUDE_DIR}/{TASK_ID}/outputs/tree.txt` at completion. Docs-only tasks do not need it.
+
+## 7. OC-7: `code_docs_status_sync`
+
+Before writing {{EXPERIMENT_UNIT_LABEL}} status, prompt smoke checks, or runner status, sync current code / notebook / docs with rg / view.
+
+Implications:
+
+- Verify source tokens before saying "current code".
+- Separate the states SRC implemented, RUN created, RUN completed, and verdict confirmed.
+- Smoke expected values come from current files, not historical artifacts.
+
+## 8. OC-8: `project_instructions_sync`
+
+This framework does not use Project Memory; the shared docs tree under `docs/` is the sole single source of truth, gated by `make docs-check`.
+
+Implications:
+
+- The {{ROLE_TERM}} does not update Project Instructions directly; it provides replacement text or a diff for {{USER_NAME}} to paste.
+- Check `docs/operations/project-memory-and-instructions.md` when startup protocol, prompt boilerplate, on-demand pull policy, docs language, or Claude Chat language policy changes.
+- Instructions canonical text is mastered in `docs/operations/project-memory-and-instructions.md` section 2 and mirrored byte-identically in `docs/entrypoint.md` section 2.
+- Silent updates are forbidden.
+
+## 9. OC-9: `docs_consistency_guard`
+
+Shared docs edits must pass the docs consistency guard.
+
+Implications:
+
+- Identify the change class in `docs/operations/consistency-guard.md` before editing.
+- Update the required cascade files in the same task.
+- Run `make docs-check` from {{REPO_VAR_BRACE}} before the final response.
+- Use `make install-hooks` once per clone to activate the versioned pre-commit gate.
+- Fix every guard failure before the final response. If the guard cannot run, report the reason and residual risk.
+
+## 10. OC-10: `time_estimation_discipline`
+
+Task time estimation uses empirical marginal-value discipline:
+
+- Check overlap with existing analyses, then state the expected new knowledge.
+- Separate the expected wall-time, the range, and the max budget. "N hours is okay" is a max budget, not the expectation.
+- For analysis tasks, the default is expected wall-time = N x 3 min and max budget = N x 10 min until `docs/operations/time-estimation.md` has stronger anchors.
+- Exceeding an empirical default requires a concrete anchor task ID and actual wall-time.
+- Do not boost just because tensor processing, figure generation, broad search, or docs cascade feels heavy.
+
+<!-- if:SRC_MIRROR_ENABLED=yes -->
+## 11. OC-11: `workspace_root_is_non_git_local_master`
+
+{{PROJECT_VAR_BRACE}} is a non-git local master. Claude Code / Codex prompts must not include `git commit` or `git push` for it. The git repo for the common docs and the `src/` mirror is {{REPO_VAR_BRACE}}.
+
+## 12. OC-12: `src_mirror_sync`
+
+The `src/` mirror under {{REPO_VAR_BRACE}} reflects the workspace source `{{PROJECT_VAR_BRACE}}/src/`. Do not edit the mirror directly; modify the workspace source and run `make sync-src` when the task is a source sync.
+
+<!-- endif -->
+<!-- if:ENABLE_AUTO_MODE=yes -->
+## 13. OC-13: `auto_mode_workspace_isolation`
+
+Auto mode never edits existing project files in place. It uses an isolated task workspace.
+
+Implications:
+
+- The workspace source, datasets, checkpoints, result directories, and notebooks are read-only during Auto mode campaigns.
+- Claude Code / Codex copies required source files into `${CLAUDE_DIR}/{TASK_ID}/workspace/src/` and mutates only that copy.
+- Experiment outputs, run-local checkpoints, results, logs, and patches go under `${CLAUDE_DIR}/{TASK_ID}/`.
+- The campaign deliverable is a patch proposal with evidence; applying it to the workspace is a separate explicit task.
+- Fair comparison is tier-based: the case subset, epochs, seed, batch size, score aggregation, and metric parser must match inside a tier.
+
+<!-- endif -->
+Conditional OC numbers (OC-11 and above) may be absent when the corresponding subsystem is off in this clone, and that is fine; the OC identifiers stay stable regardless.
+
+## Project-Specific OCs
+
+<!-- Add clone-specific operational constraints here, continuing the OC-N numbering. Empty until you record one. -->

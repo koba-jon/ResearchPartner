@@ -1,0 +1,35 @@
+# Update Rules
+
+## 0. Role Of This File
+
+This file stores cross-doc cascade rules. Use it after {{EXPERIMENT_UNIT_LABEL}} results, method changes, operating-rule changes, and docs hierarchy changes.
+
+## 1. {{EXPERIMENT_UNIT_LABEL}} Completion Cascade
+
+When a {{EXPERIMENT_UNIT_LABEL}} finishes, update:
+
+- `docs/project/project-status.md`: verdict and next task.
+- `docs/project/themes/theme-index.md`: compact new {{ANALYSIS_RECORD_LABEL}} row.
+- `docs/project/themes/theme-bodies.md`: detailed new {{ANALYSIS_RECORD_LABEL}} body.
+- `docs/method/algorithmic-levers.md`: lever state.
+- `docs/evaluation/comparison.md`: numeric column.
+- `docs/project/backlog/README.md`: backlog.
+- `docs/operations/session-kickoff.md`: next-session protocol.
+
+## 2. Method And Terminology Cascade
+
+Method changes cascade to `docs/method/` and `docs/evaluation/evaluation-and-visualization.md`.
+
+New terminology goes to `docs/concepts/glossary.md`.
+
+Startup-instruction changes require checking both `docs/entrypoint.md` and `docs/operations/project-memory-and-instructions.md`.
+
+## 3. Operating Rule Cascade
+
+New recurring constraints go to `docs/operations/rules/operational-constraints.md`.
+
+New hard prohibitions go to `docs/operations/rules/forbidden-actions.md`.
+
+New delivery checks go to `docs/operations/rules/deliverable-checklist.md`.
+
+After any rules route change, update `docs/operations/shared-instructions.md`, `docs/operations/README.md`, and `docs/entrypoint.md` as needed.

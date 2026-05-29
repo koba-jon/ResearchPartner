@@ -1,0 +1,41 @@
+# Getting Started with the {{PROJECT_NAME}} {{ROLE_TERM}}
+
+A short manual for operating this clone day to day. ({{USER_NAME}}, this was generated for your project; edit it freely — it is re-rendered by `make update`, so put durable project notes in `docs/` instead.)
+
+## 1. Start a Claude Chat session
+
+1. Open your {{PROJECT_NAME}} Claude Project.
+2. Confirm the Project's custom instructions contain the text from `project-instructions.txt` (paste it once).
+3. Begin the conversation. The {{ROLE_TERM}} reads `docs/entrypoint.md` first, summarizes the current state, and pulls only the docs it needs.
+4. Replies come in {{CHAT_LANG}}, conclusion first.
+
+## 2. Run a task with Claude Code
+
+1. Ask the {{ROLE_TERM}} (in Chat) to write a Claude Code prompt for the task; it follows `docs/operations/prompt-factory.md`.
+2. The prompt defines the path variables from `docs/entrypoint.md` section 0 and states its edit scope.
+3. Run it in Claude Code. Task artifacts land under `${CLAUDE_DIR}/{TASK_ID}/`.
+
+## 3. Record results
+
+After an experiment, the numbers go into `docs/evaluation/comparison.md`, the verdict and next step into `docs/project/project-status.md`, and a new {{ANALYSIS_RECORD_LABEL}} into `docs/project/themes/`. Then run `make docs-check`.
+
+## 4. Who owns which files
+
+- **Framework-owned** (the operating layer: `docs/operations/**`, `docs/entrypoint.md`, scripts): re-rendered by `make update`. Don't hand-edit; if you do, `make update` preserves your copy and writes the new version as `*.rp-new` to merge.
+- **Project-owned** (your research state: status, comparison, {{ANALYSIS_RECORD_LABEL}} records, backlog, concept/method bodies): yours forever; `make update` never touches them.
+- `ownership.json` is the exact classification.
+
+## 5. Pull framework improvements
+
+```bash
+git fetch upstream && git merge upstream/main
+make update      # re-render framework files only
+make docs-check
+```
+<!-- if:SRC_MIRROR_ENABLED=yes -->
+## 6. Keep the source mirror fresh
+
+```bash
+make sync-src    # mirror your workspace source into src/
+```
+<!-- endif -->

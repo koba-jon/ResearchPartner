@@ -1,0 +1,30 @@
+# Active Issues
+
+## 0. Role Of This File
+
+This file stores the highest-priority open issues and the next {{EXPERIMENT_UNIT_LABEL}} candidates -- the immediate shortlist the {{ROLE_TERM}} draws from. Broader lever inventory by component lives in `docs/project/backlog/layer-backlog.md`; set-aside ideas live in `docs/project/backlog/dormant-hypotheses.md`; gaps blocking a writeup live in `docs/project/backlog/paper-readiness.md`.
+
+## 1. Highest-Priority Open Issues
+
+The most pressing unresolved problems, most important first. None recorded yet; the item below is a marked example to seed the list as the project starts.
+
+- (example) Establish a reproducible baseline run so later {{EXPERIMENT_UNIT_LABEL}} results have something to compare against.
+
+## 2. Next {{EXPERIMENT_UNIT_LABEL}} Candidates
+
+The {{ROLE_TERM}} proposes the next {{EXPERIMENT_UNIT_LABEL}} from this table. Check `docs/method/algorithmic-levers.md` first so a rejected approach is not re-proposed. The row below is a marked example.
+
+| candidate | rationale | cost |
+|---|---|---|
+| (example) baseline run | establishes the accepted base for comparison | low |
+
+## 3. Prioritization Rubric
+
+Rank candidates by expected value, not by ease alone. For each, weigh:
+
+- Information gain: how much the result would change the next decision. A {{EXPERIMENT_UNIT_LABEL}} that resolves an open risk in `docs/project/project-status.md` ranks high; a marginal tweak ranks low.
+- Cost: compute, wall-time, and effort. Use `docs/operations/time-estimation.md` for any wall-time figure rather than guessing.
+- Blocking power: whether other work or a writeup claim waits on it. A baseline that unblocks every later comparison ranks above an isolated improvement.
+- Risk reduction: whether it tests an assumption that, if wrong, would invalidate later work.
+
+Prefer the cheapest {{EXPERIMENT_UNIT_LABEL}} that resolves the biggest open uncertainty. Keep one lever per {{EXPERIMENT_UNIT_LABEL}} so the verdict is attributable. When two candidates tie, pick the one that unblocks the most downstream work.

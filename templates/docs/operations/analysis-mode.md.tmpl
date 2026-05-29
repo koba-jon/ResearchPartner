@@ -1,0 +1,88 @@
+# Analysis Mode Protocol
+
+Analysis (analysis mode) draws conclusions from the project's own artifacts: code analysis, metric and log interpretation, cross-{{EXPERIMENT_UNIT_LABEL}} comparison, and critical verification of those conclusions. Gathering external/new knowledge is Investigate mode. Docs consistency and {{ROLE_TERM}} operating improvements belong to Maintain mode (`docs/operations/maintenance-mode.md`). Project Instructions candidates belong to `docs/operations/project-memory-and-instructions.md`.
+
+## 1. Trigger
+
+Use analysis mode only when {{USER_NAME}} explicitly says "analysis mode".
+
+Do not trigger it for:
+
+- a casual "take a look".
+- "what do you think?".
+- common-doc consistency checks.
+
+Those are normal answers or Maintain-mode tasks.
+
+## 2. Read-Only Principle
+
+In analysis mode, all existing files are READ-ONLY, including source, datasets, results, runners, and existing `claude/` artifacts.
+
+Copies and probes go under `${CLAUDE_DIR}/{TASK_ID}/workspace/`. Deliverables go under `${CLAUDE_DIR}/{TASK_ID}/outputs/`. Write only inside `${CLAUDE_DIR}/{TASK_ID}/`.
+
+`TASK_ID` format: `YYYYMMDD-HHMM-ANALYZE-{topic}`, where the timestamp is resolved with a real `date` call at generation time. See `docs/operations/directory-map.md`.
+
+## 3. Executor Routing
+
+Decide whether Claude Chat answers directly or hands off to Claude Code.
+
+| Target files | Real data access | Expected response length | Executor |
+|---|---|---|---|
+| up to 5 | no | short | Claude Chat |
+| up to 5 | no | long | Claude Code |
+| up to 5 | yes | any | Claude Code |
+| 6 or more | any | any | Claude Code |
+
+On boundaries, prefer Claude Code. "Leave it to you" means optimize the scope, not maximize it.
+
+## 4. Master Report Structure
+
+`analysis_report.md` under `outputs/` is the single source of truth. Write the Abstract last.
+
+| Section | Content |
+|---|---|
+| Abstract | 3-5 sentences: task, main finding, implication |
+| Background | {{EXPERIMENT_UNIT_LABEL}} and {{ANALYSIS_RECORD_LABEL}} context |
+| Inventory | input artifacts, missing files, skip reasons |
+| Method | parse rules, metrics, definitions |
+| Results | tables, figures, and data-file paths; keep data separate from interpretation |
+| Interpretation | mechanism interpretation with a confidence level |
+| Limitations | statistical power, artifact constraints, unchecked items |
+| Deliverables | generated files |
+| Project-Update Candidate | only when `docs/operations/project-memory-and-instructions.md` is triggered |
+
+Each per-finding {{ANALYSIS_RECORD_LABEL}} should keep Method, Results, and Interpretation as separate blocks. Do not silently truncate a complete table; if text must be short, write the raw data file and explain the range.
+
+## 5. Marginal-Value Discipline
+
+Before prompting an analysis task, briefly check:
+
+1. overlap with prior analysis or {{ANALYSIS_RECORD_LABEL}} entries.
+2. the expected new knowledge.
+3. the record count and wall-time using `docs/operations/time-estimation.md`.
+4. whether block-level flush or skip rules are needed.
+
+If exceeding the default time formula, cite a concrete anchor task ID and its actual wall-time. Do not boost the estimate because tensor or figure work feels heavy; Claude Code wall-time is usually dominated by token generation. "N hours is okay" is a max budget, not the expected wall-time. After useful timed analysis, update the ledger in `docs/operations/time-estimation.md`.
+
+## 6. Critical Verification
+
+Analyze mode must try to refute its own conclusion, not only support it. Before recording a verdict:
+
+- State the single claim, then list what would have to be true for it to be WRONG, and check each.
+- Look for the most likely confound first: leakage, a test-label oracle, an unfair baseline, too small a sample, or a metric that hides per-case regression.
+- Prefer an independent line of evidence over re-reading the same numbers.
+- If the claim survives, record it with a confidence level; if it does not, record the refutation as the finding.
+- For a high-stakes verdict, verify from more than one angle (for example correctness, reproducibility, and a skeptic's read) rather than one heavier pass.
+
+Example (illustrative). Claim: "the new method beats the baseline by 4 points." Refutation attempts: (1) same data split and seed for both? -- the baseline used a different split; re-running on the matched split drops the gain to 0.5. (2) any per-case regression hidden by the mean? -- two of ten cases got worse. Verdict: GREY, not ACCEPT, and the recorded finding is the split confound, not the 4-point headline.
+
+This critical pass is a discipline inside Analyze mode, not a separate mode.
+
+## 7. Forbidden
+
+- Directly editing existing files.
+- Git operations against `{{PROJECT_VAR_BRACE}}`.
+- Presenting a test-label oracle as deployable performance.
+- Guessing code, path, or numeric facts.
+- Mixing interpretation into raw result blocks.
+- Ignoring `docs/operations/project-memory-and-instructions.md` when findings should affect the Project Instructions.

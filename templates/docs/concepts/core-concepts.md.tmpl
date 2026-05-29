@@ -1,0 +1,48 @@
+# Core {{PROJECT_NAME}} Concepts
+
+This file holds the stable core idea of {{PROJECT_NAME}}: what the project is, the central approach, the causal decomposition the {{ROLE_TERM}} reasons over, and the recurring lessons. The bodies below are placeholders. The {{ROLE_TERM}} fills them in as the project takes shape; keep this file low-volatility and move volatile state to `docs/project/project-status.md`.
+
+## 1. What {{PROJECT_NAME}} Is
+
+PLACEHOLDER. Write one paragraph describing the project. Seed it from the intake: the domain is {{INTENT_DOMAIN}}, the goal is {{INTENT_GOAL}}, and the stack is {{INTENT_STACK}}. A good paragraph answers four questions in order: what problem exists, why current approaches fall short, what this project does differently, and what a successful result looks like in one measurable sentence. Keep it stable; specific current numbers belong in `docs/evaluation/comparison.md`.
+
+Drafting test: if you cannot name the one metric in `docs/evaluation/evaluation-and-visualization.md` section 1 that would move if the project succeeds, the paragraph is not yet concrete enough.
+
+Example (illustrative), ML: "Long-document question answering degrades when the answer spans distant passages; retrieval-then-read pipelines drop the cross-passage link. We add a re-linking step before reading; success is +5 exact-match points on multi-hop questions with no loss on single-hop."
+
+Example (illustrative), wet-lab: "Our assay's readout drifts across plates, confounding dose-response fits. We add a per-plate control normalization; success is a 2x reduction in inter-plate variance of the control wells without shifting the fitted EC50."
+
+Example (illustrative), systems: "Tail latency spikes under bursty load because the scheduler batches greedily. We cap batch age; success is p99 latency under 50 ms at peak QPS with under 3 percent throughput loss."
+
+## 2. Core Approach
+
+PLACEHOLDER. Describe the central idea of the method in two or three sentences: the key mechanism, the unit of change, and why it is expected to work (the hypothesis, stated so it could be wrong). Keep design rationale here and keep the concrete component inventory in `docs/method/method-overview.md`. The detailed tunable choices live in `docs/method/algorithmic-levers.md`.
+
+State the approach as a falsifiable bet, not a description. "We re-link passages before reading" is a description; "re-linking recovers the cross-passage signal that retrieval loses, so multi-hop accuracy rises while single-hop is unchanged" is a bet an {{EXPERIMENT_UNIT_LABEL}} can refute.
+
+## 3. Causal Decomposition
+
+Break the system into stages or components so a failure can be attributed to one place. This is the backbone the rest of the framework leans on: each component is a row, each {{EXPERIMENT_UNIT_LABEL}} changes exactly one row, and `docs/evaluation/debugging-guide.md` maps symptoms back to these rows. A component earns a row only if a change to it could plausibly move a metric on its own.
+
+Fill in the table for this project; the rows below are illustrative examples from different domains to show the shape.
+
+| Stage / Component | What it does | Failure it can cause |
+|---|---|---|
+| Input preparation (illustrative, ML) | Turns raw inputs into the representation the model consumes | Bad normalization makes every downstream metric look worse, masking the real cause |
+| Sample handling (illustrative, wet-lab) | Prepares and loads specimens before measurement | Pipetting or plate-layout error shows up as a treatment effect that is really position bias |
+| Request scheduler (illustrative, systems) | Orders and batches incoming work | A greedy batching policy inflates tail latency while average latency looks fine |
+
+Each {{EXPERIMENT_UNIT_LABEL}} should change one component in this table and hold the rest fixed (the central discipline of this framework), so the resulting metric delta is attributable. When a {{EXPERIMENT_UNIT_LABEL}} surprises you, walk this table top to bottom in `docs/evaluation/debugging-guide.md`.
+
+Common pitfall: a "component" that bundles two independent mechanisms (for example, "preprocessing + augmentation") cannot be tested in isolation. Split it into two rows so each can be a separate {{EXPERIMENT_UNIT_LABEL}}.
+
+## 4. Central Recurring Lessons
+
+The durable lessons that survive across {{EXPERIMENT_UNIT_LABEL}}s. Add a row whenever a {{ANALYSIS_RECORD_LABEL}} produces a conclusion you do not want to relearn. A lesson belongs here (not in a backlog note) when it would change how you design the next {{EXPERIMENT_UNIT_LABEL}} regardless of which component it touches. The rows below are illustrative.
+
+| Lesson | Why it holds | Evidence |
+|---|---|---|
+| Fix one component per {{EXPERIMENT_UNIT_LABEL}} (illustrative) | Changing two at once makes the metric delta unattributable | First {{EXPERIMENT_UNIT_LABEL}} where a paired change hid a regression |
+| Always log the random seed (illustrative) | Run-to-run noise was mistaken for a real effect until seeds were pinned | A "gain" that vanished on re-run with a fixed seed |
+
+<!-- The rows above are placeholders. Replace them as real lessons accumulate; do not delete the examples until at least one real lesson exists. -->

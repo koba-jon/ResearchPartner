@@ -1,0 +1,16 @@
+# {{ANALYSIS_RECORD_LABEL}} Index
+
+## 0. Role Of This File
+
+This is the compact index of every {{ANALYSIS_RECORD_LABEL}}, one row each. Use it to find the relevant record fast, then read the detailed body in `docs/project/themes/theme-bodies.md`. The rules for when a record is worth opening live in `docs/project/themes/theme-rules.md`. Keep this index and the bodies in sync: every row here has a matching numbered body, and vice versa.
+
+## 1. Quick Table
+
+One row per record, lowest id first. Keep the takeaway to one line; the body holds the detail. The rows below are marked examples; replace them with real records. Status is one of: open (still being investigated), settled (conclusion reached), or rejected (approach ruled out -- also recorded in `docs/method/algorithmic-levers.md`).
+
+| id | title | status | one-line takeaway |
+|---|---|---|---|
+| 1 (example) | baseline behavior on the chosen set | settled | establishes the reference numbers later {{EXPERIMENT_UNIT_LABEL}}s compare against |
+| 2 (example) | unweighted objective ignores rare cases | rejected | trivial solution scored well; see `docs/method/algorithmic-levers.md` |
+
+To add a record: append a row here with the next id, then add the matching `### N. Title` body in `docs/project/themes/theme-bodies.md`.

@@ -1,0 +1,60 @@
+# Operation Modes
+
+Every request to the {{ROLE_TERM}} resolves to one operating mode. There are **six lifecycle modes** that follow the research loop, and **two cross-cutting modes** that orchestrate or maintain it. Plain question-answering is the default and is not a mode.
+
+Read this file when the task mode is ambiguous. Classify first, then act under that mode's discipline. Startup order is mastered by `docs/entrypoint.md`.
+
+## 1. Lifecycle Modes
+
+| Mode | Purpose | Safety | Where |
+|---|---|---|---|
+| Investigate | Gather **external / existing** knowledge: literature, prior work, methods, web search, and reading the current codebase. | read-only (reaches external services) | Chat |
+| Design | Generate hypotheses and approaches, and plan the next {{EXPERIMENT_UNIT_LABEL}}. | read-only | Chat |
+| Implement | Create or change code and specifications. | mutating (code) | Code |
+| Experiment | Run an experiment **and record its results** back into the docs (ingestion is the closing step of this mode). | mutating + compute cost | Code |
+| Analyze | Draw conclusions from the project's **own** artifacts, **including critical verification** of those conclusions. | read-only | Chat / Code |
+| Write | Produce README, technical report, or paper prose. | mutating (docs only) | Chat |
+
+Boundary between the two read-only research modes: **Investigate** brings in information from outside the project (or surveys code you have not yet internalized); **Analyze** reasons over results and artifacts the project already produced.
+
+## 2. Cross-Cutting Modes
+
+These are not lifecycle steps; they sit above or alongside the loop.
+
+<!-- if:ENABLE_AUTO_MODE=yes -->
+- **Auto** — autonomously chain the lifecycle modes toward a goal, inside hard safety boundaries (isolated workspace, fixed budget, explicit stop conditions). Auto-running the read-only modes (Investigate, Design, Analyze) is low-risk; auto-running Implement or Experiment **must** use an isolated workspace and never edit existing files in place. Auto returns proposals for Write and Maintain rather than performing them autonomously. See `docs/operations/auto-mode.md`.
+<!-- endif -->
+- **Maintain** — keep the project healthy: docs consistency and large-scale cleanup, plus the reflection ritual that turns failures into prevention rules (operational constraints and {{ANALYSIS_RECORD_LABEL}}s). See `docs/operations/maintenance-mode.md`.
+
+## 3. Trigger Classification
+
+| The request is about... | Mode |
+|---|---|
+| "what does prior work do", "find a paper / method", "search the web", "read the codebase" | Investigate |
+| "what should we try next", "propose an approach", "design the next {{EXPERIMENT_UNIT_LABEL}}" | Design |
+| "write / change the code", "implement the spec" | Implement |
+| "run it", "train / evaluate", "record the result" | Experiment |
+| "what do these results mean", "is this real", "verify / stress-test the claim" | Analyze |
+| "draft the README / report / paper section" | Write |
+<!-- if:ENABLE_AUTO_MODE=yes -->| "explore this autonomously", "run a campaign for N hours" | Auto |<!-- endif -->
+| "clean up the docs", "reflect on what went wrong", "turn this lesson into a rule" | Maintain |
+
+If a request mixes modes, decompose it: do the read-only modes first (Investigate / Design / Analyze), confirm the plan with {{USER_NAME}}, then enter a mutating mode.
+
+Example (illustrative). "The new approach is not beating the baseline -- figure out why and fix it" decomposes into: **Analyze** (why it underperforms, with critical verification) -> confirm the diagnosis -> **Design** (the corrective change) -> **Implement** it -> **Experiment** (run and record). Five modes, surfaced as a short plan before any file changes -- not one undifferentiated "fix it" pass.
+
+## 4. Mode Discipline And Safety
+
+- **Read-only vs mutating is a hard property.** Read-only modes (Investigate, Design, Analyze) and any auto-run of them must not change tracked files outside `${CLAUDE_DIR}/{TASK_ID}/`. Mutating modes (Implement, Experiment, Write, Maintain) state their edit scope up front.
+- **Doc-update is every mode's closing discipline**, not a separate mode: when a mode produces a durable result, cascade it into the docs per `docs/operations/consistency-guard.md` and run `make docs-check`.
+- **Judgment is an output, not a mode.** A verdict (accept / inconclusive / reject; see the verdict vocabulary in `docs/evaluation/evaluation-and-visualization.md`) is the result of Analyze or Experiment, recorded in `docs/project/project-status.md`.
+- **Project Instructions** changes are surfaced as candidate text for {{USER_NAME}} to paste (see `docs/operations/project-memory-and-instructions.md`); they are not a mode and are never edited silently.
+- **Default Q&A** (a quick question answered in 1-3 lines) needs no mode.
+
+## 5. Common First Move
+
+Whatever the mode: read `docs/entrypoint.md`, summarize the current state, pull only the task-relevant docs, classify the mode, verify code/paths/numbers against current files, and state the edit scope before changing anything. Lead chat answers with the conclusion in {{CHAT_LANG}}.
+
+## 6. If The Mode Was Wrong
+
+If the mode changes midstream: state the mismatch in one sentence, reclassify, decide whether existing artifacts are kept, and if it matters, capture a {{ANALYSIS_RECORD_LABEL}} or an operational constraint via Maintain mode.

@@ -1,0 +1,60 @@
+# Current Project Snapshot
+
+## 0. Role Of This File
+
+This is the concise current-state snapshot, maintained by the {{ROLE_TERM}}. It is the one place that always reflects where the project is right now, and it is the target of `docs/entrypoint.md` section 2. {{ANALYSIS_RECORD_LABEL}} history starts in `docs/project/themes/theme-index.md`, detailed bodies live in `docs/project/themes/theme-bodies.md`, numeric tables live in `docs/evaluation/comparison.md`, lever state and the rejected-approach master live in `docs/method/algorithmic-levers.md`, and the research backlog starts at `docs/project/backlog/README.md`. The {{ROLE_TERM}} updates this file at the end of every session so it never goes stale. Everything below is seeded from setup intent and marked example rows; replace it with the project's live state.
+
+## 1. Project Overview
+
+The at-a-glance table, seeded from setup intent and {{COMPUTE_ENV}}. Update the last two rows as the project acquires an accepted base and a focus.
+
+| Item | Current state |
+|---|---|
+| project name | {{PROJECT_NAME}} |
+| goal | {{INTENT_GOAL}} |
+| domain | {{INTENT_DOMAIN}} |
+| stack | {{INTENT_STACK}} |
+| compute | {{COMPUTE_ENV}} |
+| accepted base | none yet |
+| current focus | {{INTENT_FIRST_STEP}} |
+
+## 2. Current State In One Page
+
+This is the living one-page state; `docs/entrypoint.md` section 2 points here, so keep it readable on its own. The {{ROLE_TERM}} refreshes it at the end of every session. Treat the values below as the seed for a fresh project.
+
+- Goal: {{INTENT_GOAL}}.
+- First planned step: {{INTENT_FIRST_STEP}}.
+- Current {{EXPERIMENT_UNIT_LABEL}}: none yet.
+- Accepted base: none yet.
+- Last verdict: none yet.
+- Open risks / unknowns: none recorded yet.
+
+Detected workspace at setup time:
+
+```text
+{{INGEST_SUMMARY}}
+```
+
+Read `docs/project/backlog/README.md` for what to do next, and `docs/method/algorithmic-levers.md` for which approaches have already been ruled out.
+
+## 3. Current {{EXPERIMENT_UNIT_LABEL}} Logic
+
+No {{EXPERIMENT_UNIT_LABEL}} is in flight yet. When the first one starts, replace this paragraph with: what it changes relative to the accepted base, the one lever under study, and why -- in one short paragraph. Keep the reasoning here and the numbers in `docs/evaluation/comparison.md`. Change one lever per {{EXPERIMENT_UNIT_LABEL}} so the verdict is attributable.
+
+## 4. History
+
+One row per finished {{EXPERIMENT_UNIT_LABEL}}, newest at the bottom. Keep it terse; full numbers live in `docs/evaluation/comparison.md` and full reasoning in `docs/project/themes/theme-bodies.md`. The row below is a marked example; replace it with real history.
+
+| {{EXPERIMENT_UNIT_LABEL}} | change | verdict | key result |
+|---|---|---|---|
+| 1 (example) | first baseline run, no change yet | pending | one-line headline metric, see `docs/evaluation/comparison.md` |
+
+Verdict vocabulary is defined in `docs/evaluation/comparison.md`; reuse those terms here rather than inventing new ones.
+
+## 5. Next Task Router
+
+The {{ROLE_TERM}} proposes the next {{EXPERIMENT_UNIT_LABEL}} from the backlog. Start at `docs/project/backlog/README.md`; near-term candidates are in `docs/project/backlog/active-issues.md`. Before proposing anything new, check `docs/method/algorithmic-levers.md` so a rejected approach is not re-proposed.
+
+## 6. Update Discipline
+
+When this snapshot changes, cascade per `docs/entrypoint.md` section 5: usually `docs/evaluation/comparison.md`, `docs/project/themes/theme-index.md`, the relevant body in `docs/project/themes/theme-bodies.md`, `docs/method/algorithmic-levers.md`, and `docs/project/backlog/README.md`. Then run `make docs-check`.

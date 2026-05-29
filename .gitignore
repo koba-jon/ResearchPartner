@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+*.pyc
+
+# macOS
+.DS_Store
+
+# NOTE: *.rp-new files (written by update.py when it would otherwise clobber a
+# locally-edited framework file) are intentionally NOT ignored, so they appear in
+# `git status` as a reminder to review and merge them. Delete each after merging.
+
+# NOTE: researchpartner.config.json is intentionally NOT ignored — a configured
+# clone commits it (it is the clone's identity and update.py re-reads it).

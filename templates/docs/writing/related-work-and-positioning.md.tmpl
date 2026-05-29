@@ -1,0 +1,38 @@
+# Related Work And Positioning
+
+How {{PROJECT_NAME}} relates to prior work: the axes along which to position it, the concrete comparison targets, and the one difference that matters. This is guidance the {{ROLE_TERM}} applies when writing the related-work section or framing a contribution. Position honestly -- the goal is to locate the work precisely, not to inflate it.
+
+## 1. Positioning Principles
+
+- Position by axis, not by ranking. Say where {{PROJECT_NAME}} sits on a dimension, not that it is "better than" a list of methods.
+- Credit prior work for what it does well, then state the specific gap {{PROJECT_NAME}} addresses. A related-work section that only criticizes reads as defensive.
+- Compare on conditions you can match. If a prior method used a different dataset or budget, say so rather than implying a head-to-head you did not run.
+- Keep every comparative number inside the safe-claim boundary in `docs/writing/paper-writing-guide.md` section 4.
+
+## 2. Positioning Axes
+
+The dimensions along which methods in this area differ. Pick the two or three axes where {{PROJECT_NAME}} has a distinct, defensible position; do not list every axis imaginable. Fill in the list for this project; the items below are worked examples.
+
+- Supervision source (worked example): how a method obtains its training signal -- human labels, programmatic/weak labels, or self-supervision. Place {{PROJECT_NAME}} on that spectrum and name the nearest prior method on each side.
+- Cost / compute regime (worked example): the budget a method assumes -- large-scale pretraining, moderate fine-tuning, or low-resource. State which regime {{PROJECT_NAME}} targets, because methods are rarely comparable across regimes.
+
+For each axis, write one sentence locating {{PROJECT_NAME}} relative to the closest prior work on that axis. Reference any supporting numbers from `docs/evaluation/comparison.md`.
+
+## 3. Comparison Targets
+
+The specific prior methods to compare against, and why each is the right target. Fill in the table for this project; pick targets a reviewer would expect to see, including the obvious strong baseline.
+
+| Method | What it does | Why it is a comparison target |
+|---|---|---|
+| (example) standard supervised baseline | trains on full human labels | the default a reader assumes; sets the bar {{PROJECT_NAME}} must clear |
+| PLACEHOLDER | PLACEHOLDER | PLACEHOLDER |
+
+Note for each target whether a fair comparison requires matching conditions (same data, same budget, same metric); if conditions cannot be matched, say so in the writeup rather than implying parity.
+
+## 4. The Differentiator In One Sentence
+
+State what {{PROJECT_NAME}} does that the nearest prior method does not, in a single sentence, in the form: "Unlike <nearest method>, {{PROJECT_NAME}} <does X>, which <yields Y measured benefit>." The benefit must be one you can back from `docs/evaluation/comparison.md` or honestly defer to future work.
+
+- Worked example: "Unlike the standard supervised baseline, {{PROJECT_NAME}} learns from programmatic labels, which matches its macro-F1 while removing the human-annotation step."
+
+If you cannot fill this sentence without an unsupported word ("better", "robust", "novel"), the differentiator is not yet established -- run the {{EXPERIMENT_UNIT_LABEL}} that would establish it, or scope the claim down. Keep this sentence consistent with the contribution stated in the writeup's introduction.

@@ -1,0 +1,38 @@
+# Algorithmic Lever Inventory
+
+The tunable choices in {{PROJECT_NAME}}, organized by component, plus the master list of rejected approaches. `docs/operations/rules/forbidden-actions.md` points at section 3 of this file; keep that list authoritative, because it is what stops the project from re-litigating settled dead ends.
+
+## 1. Current Base
+
+The choice currently in force for each component. This is the configuration a new {{EXPERIMENT_UNIT_LABEL}} starts from and compares against. Fill in the table for this project; the rows below are illustrative. Keep numeric results in `docs/evaluation/comparison.md` and point here only for the choice and its status.
+
+| Component | Current choice | Status |
+|---|---|---|
+| Objective (illustrative, ML) | Reweighted variant | accepted empirical base; see `docs/evaluation/comparison.md` |
+| Normalization (illustrative, wet-lab) | Per-plate control normalization | accepted; cut inter-plate variance, see `docs/evaluation/comparison.md` |
+| Eviction policy (illustrative, systems) | Age-capped LRU | accepted base; held p99 latency, see `docs/evaluation/comparison.md` |
+
+## 2. Active Levers By Component
+
+The open knobs, grouped by the components in `docs/method/method-overview.md` section 1. For each lever, name the candidate change and the {{EXPERIMENT_UNIT_LABEL}} that would test it. These are placeholders; replace the component names with this project's real components.
+
+- Preprocessing / input: PLACEHOLDER. Candidate changes and the metric each is expected to move.
+- Objective / criterion: PLACEHOLDER. Candidate changes and the metric each is expected to move.
+- Inference / aggregation / serving: PLACEHOLDER. Candidate changes and the metric each is expected to move.
+
+Promote a lever to a concrete {{EXPERIMENT_UNIT_LABEL}} through `docs/project/backlog/README.md` (levers organized by component live in `docs/project/backlog/layer-backlog.md`). Change one lever per {{EXPERIMENT_UNIT_LABEL}} so the resulting delta in `docs/evaluation/comparison.md` is attributable.
+
+Prioritization heuristic: rank a lever by expected metric gain divided by cost to test. Cheap, high-signal levers go first; an expensive lever needs a cheap proxy {{EXPERIMENT_UNIT_LABEL}} before it earns the full run.
+
+## 3. Rejected Approaches (do not revive)
+
+The master list of approaches that have been tried and rejected. This is the authority that `docs/operations/rules/forbidden-actions.md` points at: before proposing any change, the {{ROLE_TERM}} checks it here. Do not re-propose one of these without new evidence that directly addresses the original reason. The rows below are illustrative worked examples from different domains.
+
+| Approach | Why rejected | {{EXPERIMENT_UNIT_LABEL}} / evidence |
+|---|---|---|
+| Unweighted objective (illustrative, ML) | Let a trivial solution score well by ignoring rare cases; headline metric collapsed on minority classes | First {{EXPERIMENT_UNIT_LABEL}} on the objective; verdict REJECT-HARD, numbers in `docs/evaluation/comparison.md` |
+| Pooling samples to save reagent (illustrative, wet-lab) | Pooling masked well-level outliers, so a contaminated well passed QC undetected | {{EXPERIMENT_UNIT_LABEL}} comparing pooled vs per-well; verdict REJECT-HARD, variance numbers in `docs/evaluation/comparison.md` |
+
+A good row makes revival hard: it names the specific failure (not "did not work") and links the evidence to a column in `docs/evaluation/comparison.md`. "New evidence" that would justify revival must contradict that specific failure, not just express renewed optimism.
+
+<!-- Add a row whenever a {{EXPERIMENT_UNIT_LABEL}} ends in REJECT-HARD or a rejected-on-principle decision. Keep the reason concrete and tie the evidence to a column in comparison.md. This table is the authority that forbidden-actions.md points at. -->

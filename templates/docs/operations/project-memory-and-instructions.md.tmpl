@@ -1,0 +1,33 @@
+# Project Memory And Instructions
+
+## 0. Role
+
+This file is the master for the {{PROJECT_NAME}} Project Instructions text and the record of how Instructions are kept in sync. This framework **does not use Project Memory**: the docs tree under `docs/` is the single source of truth, gated by `make docs-check`. There is no Memory drift ritual and no `[Memory]` candidate to emit.
+
+## 1. Instructions Only
+
+| Type | Include | Exclude | Update actor |
+|---|---|---|---|
+| Project Instructions | stable startup protocol, language policy, path-variable rule, docs-consistency rule | volatile {{EXPERIMENT_UNIT_LABEL}} state, numbers, {{ANALYSIS_RECORD_LABEL}} history (those live in docs/) | {{USER_NAME}} pastes; the {{ROLE_TERM}} only provides candidate text |
+
+## 2. Current Instructions Candidate
+
+This block is the current candidate for the Claude Project Instructions. It is mirrored byte-identically in `docs/entrypoint.md` section 2; the docs consistency guard enforces that both blocks match. The rendered, paste-ready copy is also written to `project-instructions.txt` at the repo root by init.
+
+```text
+<!-- include: _fragments/project-instructions.txt -->
+```
+
+## 3. Update Triggers
+
+Provide a new Instructions candidate when any of these change: the startup protocol, the path-variable rule, the chat/docs language policy, or the docs-consistency requirement. Day-to-day research state never goes into Instructions; it lives in the docs tree.
+
+## 4. How To Present A Change
+
+The {{ROLE_TERM}} presents Instructions changes as either the full replacement text or a minimal diff, clearly marked, for {{USER_NAME}} to paste into the Claude Project settings. The {{ROLE_TERM}} states what changed and why in one or two lines.
+
+## 5. Forbidden
+
+- Do not claim the {{ROLE_TERM}} updated the Project Instructions; only {{USER_NAME}} can paste them.
+- Do not call any memory-write tool; this framework does not use Project Memory.
+- Do not let the two mirror blocks (this file section 2 and `docs/entrypoint.md` section 2) drift; edit them together and run `make docs-check`.

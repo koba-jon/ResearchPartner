@@ -1,0 +1,162 @@
+# {{PROJECT_NAME}} Common Docs Entrypoint
+
+This is the lightweight entrypoint for the {{PROJECT_NAME}} shared knowledge base. Acting as the {{ROLE_TERM}}, read this file first, summarize the current state, then pull only the task-relevant documents on demand. Do not linearly read every file at startup.
+
+Documentation language policy:
+
+- All files under `docs/` are written in {{DOCS_LANG}}.
+- Claude Chat replies to {{USER_NAME}} are written in {{CHAT_LANG}}, unless {{USER_NAME}} explicitly asks otherwise.
+- Claude Code / Codex prompts may be written in {{CODE_LANG}}, but they must preserve the path and operational constraints below.
+
+## 0. Canonical Path Variables
+
+This table is the single source of truth for project paths. Claude Code / Codex prompts must define these variables at the top and then refer to paths in brace form such as `{{REPO_VAR_BRACE}}/src/`.
+
+| Variable | Value | Purpose |
+|---|---|---|
+| `{{PROJECT_VAR}}` | `{{PROJECT_ROOT}}` | Local master for the main {{PROJECT_NAME}} workspace.<!-- if:SRC_MIRROR_ENABLED=yes --> It is not a git repo.<!-- endif --> It contains source, data, results, `claude/`, and this docs repo. |
+| `{{REPO_VAR}}` | `{{FRAMEWORK_REPO_DIR}}` | Git repo for the common docs<!-- if:SRC_MIRROR_ENABLED=yes --> and the `src/` mirror<!-- endif -->. |
+| `CLAUDE_DIR` | `{{CLAUDE_DIR}}` | Task artifacts produced by Claude Code / Codex. |
+<!-- if:COMPUTE_ENV=colab -->| `{{COMPUTE_DRIVE_VAR}}` | `{{COMPUTE_DRIVE}}` | {{PROJECT_NAME}} root on Colab Drive (transient). |<!-- endif -->
+
+Canonical prompt header:
+
+```bash
+<!-- include: _fragments/canonical-header.txt -->
+```
+
+Path-writing rules:
+
+| Form | Example | Status |
+|---|---|---|
+| Brace form | `{{REPO_VAR_BRACE}}/src/` | Standard |
+| No-brace form | `${{PROJECT_VAR}}/src/` | Works, but avoid it |
+| Bare literal | `{{PROJECT_VAR}}/src/` | Forbidden |
+| Raw absolute path | `/Users/...` | Forbidden outside this canonical table |
+
+## 1. Startup Protocol
+
+1. Read only `docs/entrypoint.md` first.
+2. Summarize the current state in 5-7 lines.
+3. Pull only the files needed for that summary: typically `docs/project/project-status.md`, `docs/project/themes/theme-index.md`, `docs/operations/shared-instructions.md`, and `docs/evaluation/comparison.md`.
+4. Pull other files only when {{USER_NAME}}'s question or task requires them.
+5. For task-time behavior use `docs/operations/session-kickoff.md`; for explicit time estimates use `docs/operations/time-estimation.md`. Neither is a startup file unless the task needs it.
+6. When answering {{USER_NAME}}, lead with a concise 1-3 line conclusion in {{CHAT_LANG}}.
+7. Define technical terms briefly on first use; use `docs/concepts/glossary.md` if terminology is uncertain.
+
+This framework does not use Project Memory; the docs tree under `docs/` is the single source of truth, gated by `make docs-check`. When generating a Claude Code / Codex prompt, re-check section 0 and `docs/operations/rules/operational-constraints.md`. Do not reconstruct path values, operational-constraint wording, or current code tokens from chat-recalled memory; verify against current files with rg / view.
+
+## 2. Current Fast Summary
+
+The living one-page state lives in `docs/project/project-status.md` section 2. Read it after this file rather than duplicating it here, so this entrypoint stays stable.
+
+### Canonical Project Instructions Mirror
+
+The master copy is `docs/operations/project-memory-and-instructions.md` section 2. Keep this block byte-identical with that file; the docs consistency guard enforces it.
+
+```text
+<!-- include: _fragments/project-instructions.txt -->
+```
+
+## 3. Directory Map
+
+| Area | Read When | Entry Files |
+|---|---|---|
+| `docs/` | startup, path variables, routing | `docs/entrypoint.md`, `docs/README.md` |
+| `docs/concepts/` | core idea, terminology, language policy | `docs/concepts/core-concepts.md`, `docs/concepts/glossary.md` |
+| `docs/method/` | method components, levers | `docs/method/method-overview.md`, `docs/method/algorithmic-levers.md` |
+| `docs/evaluation/` | metrics, debugging, numeric SoT | `docs/evaluation/comparison.md`, `docs/evaluation/evaluation-and-visualization.md` |
+| `docs/project/` | current state, {{ANALYSIS_RECORD_LABEL}} history, backlog | `docs/project/project-status.md`, `docs/project/themes/theme-index.md`, `docs/project/backlog/README.md` |
+| `docs/operations/` | rules, prompts, modes, timing, storage, docs consistency<!-- if:ENABLE_AUTO_MODE=yes -->, Auto mode<!-- endif --> | `docs/operations/session-kickoff.md`, `docs/operations/shared-instructions.md`, `docs/operations/rules/README.md`, `docs/operations/consistency-guard.md` |
+| `docs/writing/` | README, report, positioning | `docs/writing/paper-writing-guide.md` |
+
+## 4. File Map
+
+| File | Role | Volatility |
+|---|---|---|
+| `docs/entrypoint.md` | Entrypoint, path vars, startup, summary pointer | high |
+| `docs/concepts/core-concepts.md` | Core {{PROJECT_NAME}} idea | low |
+| `docs/concepts/glossary.md` | Terminology and language policy | low |
+| `docs/method/method-overview.md` | Method components, GT/labels, objective design | mid |
+| `docs/method/algorithmic-levers.md` | Lever inventory and rejected-approach master | high |
+| `docs/evaluation/evaluation-and-visualization.md` | Metrics, verdict vocabulary, visualizations | high |
+| `docs/evaluation/debugging-guide.md` | Symptom-to-cause debugging | mid |
+| `docs/evaluation/comparison.md` | Numeric cross-{{EXPERIMENT_UNIT_LABEL}} SoT | high |
+| `docs/project/project-status.md` | Current snapshot | high |
+| `docs/project/themes/theme-index.md` | Compact {{ANALYSIS_RECORD_LABEL}} index | high |
+| `docs/project/backlog/README.md` | Research backlog entrypoint | mid |
+| `docs/operations/shared-instructions.md` | Compatibility router for shared rules | mid |
+| `docs/operations/rules/README.md` | Detailed operating rules entrypoint | high |
+| `docs/operations/directory-map.md` | Storage policy and directory map | mid |
+| `docs/operations/session-kickoff.md` | Task-time scenario protocol | high |
+| `docs/operations/consistency-guard.md` | Docs edit cascade guard | high |
+| `docs/operations/operation-modes.md` | Task mode router | high |
+| `docs/operations/analysis-mode.md` | Analysis mode protocol | high |
+| `docs/operations/prompt-factory.md` | Prompt patterns | high |
+| `docs/operations/maintenance-mode.md` | Docs consistency, cleanup, and reflection | mid |
+| `docs/operations/project-memory-and-instructions.md` | Project Instructions triggers | high |
+| `docs/operations/time-estimation.md` | Empirical task time estimation | high |
+<!-- if:ENABLE_AUTO_MODE=yes -->| `docs/operations/auto-mode.md` | Autonomous orchestration protocol | high |<!-- endif -->
+| `docs/writing/paper-writing-guide.md` | README / report guide | mid |
+| `docs/writing/related-work-and-positioning.md` | Positioning | mid |
+
+## 5. Change Routing
+
+Use this section when editing docs. Pick the first file from section 5.1, then verify the cascade in section 5.2. Update cascade files only when the edited claim, path, rule, or status affects them.
+
+### 5.1 First File To Edit
+
+| Change type | Edit first | Then check |
+|---|---|---|
+| Startup protocol or Project Instructions behavior | `docs/operations/project-memory-and-instructions.md` and the `docs/entrypoint.md` mirror | `docs/operations/shared-instructions.md`, `docs/operations/rules/operating-principles.md`, `docs/operations/session-kickoff.md`, `docs/operations/prompt-factory.md` |
+| Path variables or path-writing policy | `docs/entrypoint.md` section 0 | `docs/operations/prompt-factory.md`, `docs/operations/directory-map.md`, `docs/operations/rules/operational-constraints.md` |
+| Current {{EXPERIMENT_UNIT_LABEL}}, verdict, next task | `docs/project/project-status.md` | `docs/evaluation/comparison.md`, `docs/project/themes/theme-index.md`, `docs/project/backlog/README.md`, `docs/operations/session-kickoff.md` |
+| Numeric result or metric | `docs/evaluation/comparison.md` | `docs/project/project-status.md`, `docs/project/themes/theme-index.md`, `docs/method/algorithmic-levers.md` |
+| New backlog item or next idea | `docs/project/backlog/README.md` and the relevant body | `docs/project/project-status.md`, `docs/method/algorithmic-levers.md`, `docs/project/themes/theme-index.md` |
+| {{ANALYSIS_RECORD_LABEL}} creation or status change | `docs/project/themes/theme-index.md` | `docs/project/themes/theme-bodies.md`, `docs/project/themes/theme-rules.md` |
+| Method, objective, or evaluation design | the relevant file under `docs/method/` or `docs/evaluation/` | `docs/method/algorithmic-levers.md`, `docs/project/project-status.md` |
+| Operating rule, forbidden action, or deliverable policy | the relevant file under `docs/operations/rules/` | `docs/operations/shared-instructions.md`, `docs/operations/session-kickoff.md`, `docs/operations/operation-modes.md` |
+| README or related-work claim | the relevant file under `docs/writing/` | `docs/concepts/core-concepts.md`, the relevant method docs, `docs/evaluation/comparison.md` |
+
+### 5.2 Full Edit Cascade Matrix
+
+When you edit the file on the left, verify (and update only if the change affects them) the files on the right. Add rows for your own domain files under `docs/method/`, `docs/evaluation/`, and `docs/concepts/` as you create them.
+
+| If you edit | Also verify / update |
+|---|---|
+| `docs/entrypoint.md` section 0 (paths) | `docs/operations/prompt-factory.md` (the mirrored header), `docs/operations/directory-map.md`, `docs/operations/rules/operational-constraints.md` |
+| `docs/operations/project-memory-and-instructions.md` section 2 (Instructions) | `docs/entrypoint.md` section 2 (the byte-identical mirror) |
+| `docs/operations/operation-modes.md` | `docs/operations/session-kickoff.md`, `docs/operations/shared-instructions.md` |
+| a rule under `docs/operations/rules/` | `docs/operations/rules/README.md`, `docs/operations/shared-instructions.md`, `docs/operations/rules/deliverable-checklist.md` |
+| a numeric result | `docs/evaluation/comparison.md` first, then `docs/project/project-status.md`, `docs/project/themes/theme-index.md` |
+| a {{EXPERIMENT_UNIT_LABEL}} verdict (when one finishes) | `docs/project/project-status.md`, `docs/project/themes/theme-index.md` (+ body in `docs/project/themes/theme-bodies.md`), `docs/method/algorithmic-levers.md`, `docs/evaluation/comparison.md`, `docs/project/backlog/README.md`, `docs/operations/session-kickoff.md` |
+| a new term | `docs/concepts/glossary.md` |
+
+Keep numeric tables only in `docs/evaluation/comparison.md`; other files summarize and point there.
+
+### 5.3 File Lifecycle
+
+Creating, deleting, or renaming a doc means: update the nearest directory README or router, update this file map and cascade, fix every reference with rg, and run `make docs-check`. The guard in `scripts/check_docs_consistency.py` enforces required files, routers, links, the two byte-identical mirror blocks, and (when DOCS_LANG_IS_ASCII=yes) an ASCII-only policy.
+
+## 6. Single Sources Of Truth
+
+| Content | Master |
+|---|---|
+| Path variables | `docs/entrypoint.md` section 0 |
+| Startup protocol | `docs/entrypoint.md` section 1 |
+| Core idea and terminology | `docs/concepts/core-concepts.md`, `docs/concepts/glossary.md` |
+| Method and levers | `docs/method/method-overview.md`, `docs/method/algorithmic-levers.md` |
+| Operational constraints | `docs/operations/rules/operational-constraints.md` |
+| Forbidden actions | `docs/operations/rules/forbidden-actions.md` |
+| Metrics | `docs/evaluation/comparison.md` |
+| Current status | `docs/project/project-status.md` |
+| {{ANALYSIS_RECORD_LABEL}} history | `docs/project/themes/theme-index.md` |
+| Research backlog | `docs/project/backlog/README.md` |
+| Project Instructions text | `docs/operations/project-memory-and-instructions.md` section 2 |
+
+## 7. Update Discipline
+
+- When code or runner status changes, sync `docs/entrypoint.md`, `docs/project/project-status.md`, and `docs/operations/session-kickoff.md` first, then cascade to method docs if needed.
+- New operational constraints go into `docs/operations/rules/operational-constraints.md`; new forbidden actions into `docs/operations/rules/forbidden-actions.md`; new terms into `docs/concepts/glossary.md`.
+- Project Instructions changes are provided as text for {{USER_NAME}} to paste; the {{ROLE_TERM}} never edits them silently.
+- After docs edits, run `make docs-check` and fix all failures before the final response.

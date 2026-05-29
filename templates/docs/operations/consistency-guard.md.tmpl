@@ -1,0 +1,41 @@
+# Consistency Guard
+
+Shared-docs edits must leave the tree internally consistent. This file defines the change-class cascade you follow by hand and the machine gate that enforces the mechanical invariants.
+
+## 1. The Loop
+
+1. Identify the change class (section 2).
+2. Edit the first file, then update the cascade files named in `docs/entrypoint.md` section 5.
+3. Run `make docs-check` from the docs repo ({{REPO_VAR_BRACE}}).
+4. Fix every failure, then report the result in your final response.
+
+Install the hook once per clone with `make install-hooks`; thereafter the same checks run on every commit that touches `docs/`, `scripts/`, the `Makefile`, or the hook.
+
+## 2. Change Classes
+
+The full routing table is in `docs/entrypoint.md` section 5. The common classes are: path-variable change, current-{{EXPERIMENT_UNIT_LABEL}}/verdict change, numeric-result change, new {{ANALYSIS_RECORD_LABEL}}, method/objective change, operating-rule change, and Project-Instructions change. Each names a first file and a cascade.
+
+## 3. Machine Gate
+
+`scripts/check_docs_consistency.py` (via `make docs-check`) checks:
+
+- **Required files** exist (entrypoint, the rules bodies, the backlog bodies, the guard contract, the Makefile and hook), filtered by the ownership manifest so a disabled subsystem is not demanded.
+- **Markdown links** in `docs/**` resolve on disk.
+- **Section references** of the form `path.md section N` point to real numbered headings.
+<!-- if:DOCS_LANG_IS_ASCII=yes -->- **Character policy**: docs contain no CJK characters (the docs language is ASCII).<!-- endif -->
+<!-- if:DOCS_LANG_IS_ASCII=no -->- **Character policy**: skipped (the docs language is a non-ASCII script).<!-- endif -->
+- **Routers reach bodies**: the rules README lists all rule files; `shared-instructions.md` links all rule paths; the backlog README lists all backlog bodies.
+- **Byte-identical mirror blocks**: the Project Instructions block (`entrypoint.md` section 2 vs this section's master in `project-memory-and-instructions.md` section 2) and the canonical prompt header (`entrypoint.md` section 0 vs `prompt-factory.md` section 2) must match exactly. Both come from single-source fragments, so they cannot drift unless a template is hand-broken.
+- **Maintenance Mode N**: the header N matches the maximum activation-log row, when present.
+
+## 4. Section-Reference Discipline
+
+Refer to sections in ASCII form, `file.md section N`, in prose. The guard validates the cross-file and same-file numeric forms when written with the section sign; the ASCII form is the safe default and is not machine-validated.
+
+## 5. Rename Discipline
+
+Renaming or moving a doc is create-plus-delete: add the new route, update `docs/entrypoint.md` section 4 and section 5, fix every old-path reference (`rg` for it), keep a compatibility note only if external links exist, and run `make docs-check`.
+
+## 6. Final Response Requirement
+
+After any docs edit, state which change class you used, which files you cascaded to, and the `make docs-check` result.

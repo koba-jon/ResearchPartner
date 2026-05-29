@@ -1,0 +1,41 @@
+{
+  "_about": "Example config for non-interactive init: python3 scripts/init.py --non-interactive --config researchpartner.config.example.json . Keys starting with _ are ignored. All values are strings ('yes'/'no' for toggles). The GSAD project that this template was generalized from would set PROJECT_NAME=GSAD, USER_NAME=Hiroki, CHAT_LANG=Japanese, EXPERIMENT_UNIT_LABEL=Wave, ANALYSIS_RECORD_LABEL=Theme, COMPUTE_ENV=colab.",
+  "schema_version": 1,
+
+  "_id": "Identity",
+  "PROJECT_NAME": "Acme Vision",
+  "USER_NAME": "Alex",
+  "CHAT_LANG": "English",
+  "DOCS_LANG": "English",
+  "DOCS_LANG_IS_ASCII": "yes",
+  "CODE_LANG": "English",
+
+  "_paths": "Working location (absolute paths). FRAMEWORK_REPO_DIR defaults to this clone's own directory if omitted.",
+  "PROJECT_ROOT": "/Users/alex/work/acme-vision",
+  "FRAMEWORK_REPO_DIR": "/Users/alex/work/acme-vision/ResearchPartner",
+  "CLAUDE_DIR": "/Users/alex/work/acme-vision/claude",
+
+  "_compute": "colab | local-gpu | local-cpu | other. COMPUTE_DRIVE is required only when COMPUTE_ENV=colab.",
+  "COMPUTE_ENV": "local-gpu",
+  "COMPUTE_DRIVE": "",
+
+  "_subsystems": "Toggle the optional subsystems.",
+  "SRC_MIRROR_ENABLED": "yes",
+  "ENABLE_AUTO_MODE": "no",
+  "GENERATE_MANUAL": "yes",
+
+  "_vocabulary": "User-facing labels. GSAD used Wave / Theme.",
+  "EXPERIMENT_UNIT_LABEL": "Experiment",
+  "ANALYSIS_RECORD_LABEL": "Note",
+
+  "_vars": "Optional shell-var-name overrides. Leave blank to derive from PROJECT_NAME as <NAME>_ROOT / <NAME>_DOCS / <NAME>_DRIVE. Set them to keep an existing project's established names (e.g. REPO_VAR=AI_SCIENTIST_GSAD). Must be UPPER_SNAKE.",
+  "PROJECT_VAR": "",
+  "REPO_VAR": "",
+  "COMPUTE_DRIVE_VAR": "",
+
+  "_intent": "Only used to seed status/concept docs when the workspace has no code yet. Leave empty otherwise.",
+  "INTENT_DOMAIN": "",
+  "INTENT_STACK": "",
+  "INTENT_GOAL": "",
+  "INTENT_FIRST_STEP": ""
+}

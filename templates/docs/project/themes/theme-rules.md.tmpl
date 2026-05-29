@@ -1,0 +1,33 @@
+# {{ANALYSIS_RECORD_LABEL}} Rules
+
+## 0. Role Of This File
+
+This file states when to open a {{ANALYSIS_RECORD_LABEL}}, when to record an operational constraint instead, and how to record a rejected approach. Record summaries live in `docs/project/themes/theme-index.md` and bodies in `docs/project/themes/theme-bodies.md`.
+
+## 1. When To Open A {{ANALYSIS_RECORD_LABEL}}
+
+Open a {{ANALYSIS_RECORD_LABEL}} when there is something about the problem worth remembering across sessions:
+
+- a finding (a result, mechanism, or measured behavior that informs future decisions).
+- a decision (a chosen direction, an accepted base, a scope boundary, with the reason).
+- a rejected approach (something tried or analyzed and ruled out, with why).
+
+Do NOT open one for: a raw number with no interpretation (that lives in `docs/evaluation/comparison.md`), a transient observation that will not affect a future choice, or a how-we-work rule (see section 2). One {{ANALYSIS_RECORD_LABEL}} captures one coherent learning; if you are recording two unrelated things, open two.
+
+When you add one, add the index row in `docs/project/themes/theme-index.md`, write the body in `docs/project/themes/theme-bodies.md`, and cascade per `docs/entrypoint.md` section 5 to `docs/project/project-status.md`, `docs/method/algorithmic-levers.md`, `docs/evaluation/comparison.md`, and `docs/project/backlog/README.md` as needed.
+
+## 2. When To Add An Operational Constraint Instead
+
+If the learning is a rule about how to operate -- a workflow guardrail, a path or storage policy, a thing the {{ROLE_TERM}} must always or never do -- it belongs in the operating rules, not in a {{ANALYSIS_RECORD_LABEL}}. Add an always/never rule to `docs/operations/rules/operational-constraints.md`, or a hard prohibition to `docs/operations/rules/forbidden-actions.md`.
+
+The test: a {{ANALYSIS_RECORD_LABEL}} records what was learned about the problem; an operational constraint records how work must be done. "Reweighting fixed the rare-case collapse" is a finding (a record). "Never read results from the transient drive" is a constraint (operating rules). When a single learning has both a problem insight and a process rule, record the insight as a {{ANALYSIS_RECORD_LABEL}} and the rule in the operating rules, and cross-reference.
+
+## 3. How To Record A Rejected Approach
+
+When an approach is ruled out:
+
+1. Open a {{ANALYSIS_RECORD_LABEL}} capturing what was tried, the evidence, and why it failed. Set its index status to rejected.
+2. Add it to the rejected-approach master in `docs/method/algorithmic-levers.md` section 3, with the concrete reason and the evidence column in `docs/evaluation/comparison.md`. That table is the authority the next-task router checks before proposing work.
+3. If re-attempting it would actively waste effort or cause harm, also add a line to `docs/operations/rules/forbidden-actions.md`.
+
+Keep the reason concrete and tied to evidence ("collapsed macro-F1 to chance by ignoring rare cases"), not vague ("did not work well"), so a future session knows exactly what new evidence would justify revisiting it.

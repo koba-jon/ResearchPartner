@@ -1,0 +1,57 @@
+# Directory And Storage Policy
+
+This file summarizes the {{PROJECT_NAME}} directories and the storage policy. Path variable values are mastered in `docs/entrypoint.md` section 0.
+
+## 1. Storage Policy
+
+| Location | Nature | Use |
+|---|---|---|
+| `{{PROJECT_VAR_BRACE}}` | local master<!-- if:SRC_MIRROR_ENABLED=yes -->, not a git repo<!-- endif --> | real data, source, results, runners |
+| `{{REPO_VAR_BRACE}}` | git repo | common docs<!-- if:SRC_MIRROR_ENABLED=yes --> and the `src/` mirror<!-- endif --> |
+| `${CLAUDE_DIR}` | task artifacts | Claude Code outputs and workspaces |
+<!-- if:COMPUTE_ENV=colab -->| `${COMPUTE_DRIVE_VAR}` | transient compute workspace | experiment execution |<!-- endif -->
+
+<!-- if:COMPUTE_ENV=colab -->
+The transient compute drive may not retain past {{EXPERIMENT_UNIT_LABEL}} results. Cross-{{EXPERIMENT_UNIT_LABEL}} aggregation should happen in the local master, not on the transient drive.
+<!-- endif -->
+
+## 2. Workspace Tree
+
+Representative structure of the local master:
+
+```text
+{{PROJECT_VAR_BRACE}}/
+  src/
+  datasets/
+  results/
+    {{EXPERIMENT_UNIT_LABEL}}-001/
+    {{EXPERIMENT_UNIT_LABEL}}-002/
+  runners/
+  claude/
+```
+
+<!-- if:SRC_MIRROR_ENABLED=yes -->
+The git docs repo at `{{REPO_VAR_BRACE}}` also holds a `src/` mirror of `{{PROJECT_VAR_BRACE}}/src/`. Edit the master copy under `{{PROJECT_VAR_BRACE}}/src/`; never edit the mirror directly.
+<!-- endif -->
+
+<!-- if:SRC_MIRROR_ENABLED=yes -->`{{PROJECT_VAR_BRACE}}` is not a git repo. Do not commit or push there.<!-- endif -->
+
+## 3. Task Artifact Layout
+
+Claude Code writes per-task artifacts under `${CLAUDE_DIR}`:
+
+```text
+${CLAUDE_DIR}/{TASK_ID}/
+  outputs/
+  workspace/
+```
+
+`outputs/` holds deliverables; `workspace/` holds copies and probes. Existing project files stay read-only; mutations happen inside the task directory.
+
+## 4. TASK_ID Rule
+
+`TASK_ID` format is `YYYYMMDD-HHMM-XXXX`, for example `20260529-0754-ANALYZE-result-sweep`.
+
+- The `YYYYMMDD-HHMM` segment must be the real `date` value taken by the Claude Code run that generates the prompt or the runner, not a placeholder.
+- The {{ROLE_TERM}} drafting a prompt chooses only the `LABEL-suffix` portion (such as `ANALYZE-result-sweep` or `IMPL-loss-patch`); the timestamp is owned by the executor and resolved with `date` at generation time.
+- Do not insert an `XXXX` placeholder, a template tag, or a runtime `now()` expression in place of the timestamp; that loses the audit chain between the task report, the task directory, and the produced artifacts.

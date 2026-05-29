@@ -1,0 +1,15 @@
+# {{ANALYSIS_RECORD_LABEL}} Bodies
+
+## 0. Role Of This File
+
+This file holds the detailed body of each {{ANALYSIS_RECORD_LABEL}}. The compact index is `docs/project/themes/theme-index.md`; the rules for opening a record are in `docs/project/themes/theme-rules.md`. Each body uses a numbered heading whose id matches the index row, then three subsections: Method, Results, and Interpretation. Keep the standard shape so records stay scannable. The body below is a marked example; replace it with real records.
+
+### 1. Baseline Behavior On The Chosen Set (example)
+
+Method: state what was done or decided, and against which base. Keep it short -- point to the `docs/method/algorithmic-levers.md` entry or the prompt that produced the result rather than restating detail. (Example: ran the unchanged pipeline on the chosen evaluation set to fix a reference point.)
+
+Results: state the outcome plainly. Put numbers in `docs/evaluation/comparison.md` and reference the column here rather than duplicating tables. (Example: recorded the primary and secondary metrics as the E1 column; this is the reference the next {{EXPERIMENT_UNIT_LABEL}} compares against.)
+
+Interpretation: what the result means, what was learned, and any follow-up or rejected direction. If an approach is ruled out, also record it in `docs/method/algorithmic-levers.md` section 3. (Example: the baseline is stable enough to compare against; the next lever to test is recorded in `docs/project/backlog/active-issues.md`.)
+
+<!-- To append a new record: copy the "### N. Title" block above, increment N to match the new row in docs/project/themes/theme-index.md, and fill in Method / Results / Interpretation. -->

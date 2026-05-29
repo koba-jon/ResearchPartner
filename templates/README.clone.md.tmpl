@@ -1,0 +1,26 @@
+# {{PROJECT_NAME}}
+
+This repository is the **operating layer** for the {{PROJECT_NAME}} research project: a shared knowledge base and rule set that lets Claude act as a consistent research collaborator (the {{ROLE_TERM}}) across Claude Chat and Claude Code. It was generated from the [ResearchPartner](https://github.com/) base template.
+
+## How it is used
+
+- **Claude Chat (Project):** paste `project-instructions.txt` into the Project's custom instructions. The {{ROLE_TERM}} then reads `docs/entrypoint.md` first each session and pulls only the docs it needs.
+- **Claude Code / Codex:** prompts follow `docs/operations/prompt-factory.md` and the path variables in `docs/entrypoint.md` section 0.
+- **Knowledge base:** everything the project knows lives under `docs/` and is the single source of truth, gated by `make docs-check`.
+
+## Layout
+
+- `docs/` — the knowledge base (start at `docs/entrypoint.md`).
+- `scripts/` — the framework engine, the consistency guard, and the lifecycle tools.
+- `ownership.json` — which files the framework re-renders vs which you own.
+- `researchpartner.config.json` — this clone's configuration.
+<!-- if:SRC_MIRROR_ENABLED=yes -->- `src/` — a read-only mirror of your project source (run `make sync-src`).<!-- endif -->
+<!-- if:GENERATE_MANUAL=yes -->
+See `GETTING_STARTED.md` for how to operate this clone day to day.
+<!-- endif -->
+
+## Maintenance
+
+- `make docs-check` — verify the docs are internally consistent (also runs on commit).
+- `make update` — pull framework improvements from the base without touching your research notes.
+<!-- if:SRC_MIRROR_ENABLED=yes -->- `make sync-src` — refresh the `src/` mirror from your workspace.<!-- endif -->

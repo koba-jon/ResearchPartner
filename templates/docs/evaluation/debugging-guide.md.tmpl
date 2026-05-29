@@ -1,0 +1,28 @@
+# Symptom-To-Cause Debugging
+
+A lookup table from an observed symptom to the component most likely responsible and the first thing to check. Walk it top to bottom when a {{EXPERIMENT_UNIT_LABEL}} surprises you. The components named here are the ones in `docs/concepts/core-concepts.md` section 3, so a diagnosis lands on a real row of the causal decomposition.
+
+## 1. Symptom Table
+
+The rows below are illustrative worked examples from different domains. Replace the components with this project's own, and add a row each time a new symptom is diagnosed.
+
+| Symptom | Likely component | First check |
+|---|---|---|
+| All metrics worse at once (illustrative, ML) | Input preparation | Confirm normalization and input shape match the baseline; a single preprocessing change degrades everything downstream |
+| Headline metric up but a counter-metric dropped (illustrative, ML) | Objective / criterion | Inspect failure-case panel; the objective likely traded the counter quantity for the headline |
+| Effect appears only on some plates or batches (illustrative, wet-lab) | Sample handling | Plot the metric against plate or batch id; a position or lot effect mimics a real treatment effect |
+| Average fine, tail metric spikes (illustrative, systems) | Request scheduler | Check the distribution overlay, not the mean; a batching or eviction change shows up only in the tail |
+
+<!-- Grow this table per project. Add a row each time a new symptom is diagnosed, naming the component from core-concepts.md section 3 and the cheapest check that confirms or rules it out. -->
+
+## 2. How To Localize A Failure
+
+When the symptom is not in the table, localize before guessing:
+
+1. Reproduce the symptom on a fixed input and a fixed seed, so the failure is stable enough to study.
+2. Confirm what actually changed since the last good {{EXPERIMENT_UNIT_LABEL}} by reading `docs/evaluation/comparison.md`; a symptom that seems to point at two components usually means more than one thing changed.
+3. Bisect along the data flow in `docs/method/method-overview.md` section 1: inspect the intermediate output between two components and ask which side looks wrong. Repeat on the wrong side.
+4. Apply the cheapest discriminating check first; prefer a check that rules out a whole component over one that inspects a single value.
+5. Once localized, either fix it or, if the change itself is the cause and unfixable, record the verdict and add a row to `docs/method/algorithmic-levers.md` section 3.
+
+Common pitfall: changing two things to "fix it faster" destroys attribution. Change one thing, re-check, repeat, exactly as in a normal {{EXPERIMENT_UNIT_LABEL}}.

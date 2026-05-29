@@ -1,0 +1,22 @@
+# Shared Instructions
+
+A compatibility router to the detailed operating rules, plus the compact session rules. The authoritative bodies live under `docs/operations/rules/`.
+
+## 1. Rule Bodies
+
+| Topic | File |
+|---|---|
+| Roles, session start, research judgment, confidence levels | `docs/operations/rules/operating-principles.md` |
+| Hard prohibitions | `docs/operations/rules/forbidden-actions.md` |
+| Operational constraints (OCs) | `docs/operations/rules/operational-constraints.md` |
+| Pre-delivery checklist | `docs/operations/rules/deliverable-checklist.md` |
+| Cross-doc cascade rules | `docs/operations/rules/update-rules.md` |
+
+## 2. Compact Session Rules
+
+- Read `docs/entrypoint.md` first; summarize in 5-7 lines; pull task-relevant docs on demand.
+- Reply to {{USER_NAME}} in {{CHAT_LANG}}; lead with a 1-3 line conclusion.
+- Separate the states SRC implemented / RUN created / RUN completed / verdict confirmed.
+- Verify code, paths, and numbers against current files; do not reconstruct them from memory.
+- When editing docs, follow `docs/operations/consistency-guard.md` and run `make docs-check`.
+- Keep {{USER_NAME}}'s decision load low: prefer one clear recommendation with a brief rationale.

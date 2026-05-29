@@ -1,0 +1,35 @@
+# Terminology
+
+This file defines the documentation language policy and the operating terms used across {{PROJECT_NAME}}. When terminology is uncertain, this file wins.
+
+## 1. Language Policy
+
+- All files under `docs/` are written in {{DOCS_LANG}}.
+- Code identifiers, file paths, and metric names stay verbatim in their original form; never translate or paraphrase them.
+- Claude Chat replies to {{USER_NAME}} are written in {{CHAT_LANG}} by default, unless {{USER_NAME}} explicitly asks otherwise.
+- Claude Code / Codex prompts may be written in {{CODE_LANG}}, but they must preserve the path variables and operational constraints exactly. See `docs/entrypoint.md` section 0 for the canonical path variables.
+
+## 2. Operating Terms
+
+| Term | Meaning |
+|---|---|
+| {{EXPERIMENT_UNIT_LABEL}} | One controlled unit of work that changes a single component and produces a verdict. The unit of attribution in this framework. |
+| {{ANALYSIS_RECORD_LABEL}} | A durable record that groups related {{EXPERIMENT_UNIT_LABEL}}s and their conclusions; indexed in `docs/project/themes/theme-index.md`. |
+| operation modes | The way every request is classified: six lifecycle modes (Investigate, Design, Implement, Experiment, Analyze, Write) plus two cross-cutting modes (Auto, Maintain). Defined in `docs/operations/operation-modes.md`. |
+| SRC | A source-code change (the work of Implement mode): editing the project code so a {{EXPERIMENT_UNIT_LABEL}} can be run. Distinct from running it. |
+| RUN | Executing prepared code to produce results (the work of Experiment mode). SRC lands first, then RUN; a verdict needs RUN output. |
+| Analyze (analysis mode) | The read-only mode that draws conclusions from the project's own artifacts and critically verifies them; protocol in `docs/operations/analysis-mode.md`. |
+| Maintain (maintenance mode) | The cross-cutting mode for docs consistency, large-scale cleanup, and the reflection ritual; protocol in `docs/operations/maintenance-mode.md`. |
+<!-- if:ENABLE_AUTO_MODE=yes -->| Auto (auto mode) | The cross-cutting mode that autonomously chains lifecycle modes within hard safety boundaries; protocol in `docs/operations/auto-mode.md`. |<!-- endif -->
+| Project Instructions | The pasteable instruction block {{USER_NAME}} installs into Claude Chat; mastered in `docs/operations/project-memory-and-instructions.md` section 2. The {{ROLE_TERM}} never edits it silently. |
+| verdict | The outcome label assigned to a {{EXPERIMENT_UNIT_LABEL}} by Analyze or Experiment; the vocabulary is defined in `docs/evaluation/evaluation-and-visualization.md` section 2. |
+
+## 3. Project Terms
+
+Project-specific terms live here. The entry below is a generic example to show the shape.
+
+| Term | Meaning |
+|---|---|
+| baseline (example) | The reference configuration every {{EXPERIMENT_UNIT_LABEL}} is compared against, recorded as a column in `docs/evaluation/comparison.md` |
+
+<!-- Add project-specific terms here as they appear: model names, dataset names, internal feature names, abbreviations. Keep code identifiers and metric names verbatim per section 1. -->

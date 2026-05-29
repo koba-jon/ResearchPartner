@@ -1,0 +1,29 @@
+# Cross-{{EXPERIMENT_UNIT_LABEL}} Numeric SoT
+
+This file is the numeric single source of truth for {{PROJECT_NAME}}. All numeric results live here; every other doc summarizes a verdict and points back to this file rather than restating numbers. If a number appears anywhere else, this file is the one that is correct.
+
+## 1. Role Of This File
+
+When a {{EXPERIMENT_UNIT_LABEL}} produces metrics, record them here first, then cascade the verdict (not the raw numbers) to `docs/project/project-status.md` and the index in `docs/project/themes/theme-index.md`. The discipline: numbers live here once; prose elsewhere refers to them by {{EXPERIMENT_UNIT_LABEL}} id. This keeps one editable copy, so a correction never has to be chased across files.
+
+## 2. Results Table
+
+Columns are {{EXPERIMENT_UNIT_LABEL}} ids; rows are metric names taken verbatim from `docs/evaluation/evaluation-and-visualization.md` section 1. Add one column per {{EXPERIMENT_UNIT_LABEL}}; the leftmost is the baseline every other column is read against. The columns below are illustrative examples; replace the metric names with the real metrics for this project.
+
+| Metric | E1 (baseline, illustrative) | E2 (illustrative) |
+|---|---|---|
+| primary_metric | 0.812 | 0.857 |
+| counter_metric | 0.904 | 0.901 |
+| cost_or_latency (lower better) | 41 | 43 |
+
+Legend:
+
+- Columns are {{EXPERIMENT_UNIT_LABEL}} ids in the order they were run (E1, E2, ...); the baseline is the leftmost column.
+- Rows are metric names, written verbatim as they appear in code and logs; never paraphrase them.
+- Higher is better unless a row is annotated otherwise (for example, "lower better" above).
+- A blank cell means the metric was not measured for that {{EXPERIMENT_UNIT_LABEL}}; do not infer a value.
+- One column changes one component versus the baseline (see `docs/concepts/core-concepts.md` section 3); note the changed component in the {{EXPERIMENT_UNIT_LABEL}} record, not in this table.
+
+Reading the illustrative columns: E2 changed one component and bought +0.045 on primary_metric for a 2-unit cost rise, with the counter_metric essentially flat (-0.003). Whether that trade is an ACCEPT is decided in `docs/evaluation/evaluation-and-visualization.md` section 2, not here; this file only states the numbers.
+
+<!-- Replace E1/E2 and the placeholder metric rows with this project's real metrics and units. Keep this table as the only place full numeric results are written; everywhere else points here by {{EXPERIMENT_UNIT_LABEL}} id. -->

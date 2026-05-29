@@ -1,0 +1,21 @@
+# Deliverable Checklist
+
+## 0. Role Of This File
+
+Use this checklist before delivering prompts, docs edits, result ingestion, analysis reports, or implementation summaries.
+
+## 1. Pre-Deliverable Checklist
+
+- Is the scope clear?
+- Are file dependencies listed?
+- Were relevant OCs checked in `docs/operations/rules/operational-constraints.md`?
+- Did the prompt or change subtract before adding?
+- Are code, paths, and numbers verified rather than guessed?
+- Are the states SRC implemented / RUN created / RUN completed / verdict confirmed separated?
+- Do referenced files exist?
+- Is {{USER_NAME}}'s decision load kept low?
+- Are confidence levels used where needed?
+- Are code, docs, and notebook states consistent?
+- Was `docs/operations/project-memory-and-instructions.md` checked for Project Instructions triggers?
+- If docs were edited, did `make docs-check` pass?
+<!-- if:ENABLE_AUTO_MODE=yes -->- Was Auto mode workspace isolation respected?<!-- endif -->

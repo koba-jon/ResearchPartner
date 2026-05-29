@@ -1,0 +1,53 @@
+# Evaluation And Visualization
+
+This file defines the {{PROJECT_NAME}} metrics, the verdict vocabulary, the cross-{{EXPERIMENT_UNIT_LABEL}} comparison procedure, and the required visualizations. Numeric tables live in `docs/evaluation/comparison.md`, the numeric single source of truth; this file says how to read and judge those numbers.
+
+## 1. Metrics
+
+The metrics used to judge a {{EXPERIMENT_UNIT_LABEL}}. A complete set has a headline metric (the thing being improved), at least one counter-metric (the thing that must not regress while you chase the headline), and usually a cost metric. Fill in the table; use these exact names as the row labels in `docs/evaluation/comparison.md`. The rows below are illustrative examples from different domains.
+
+| Metric | Meaning | Main use |
+|---|---|---|
+| primary_metric (illustrative, ML) | Headline quality the project optimizes, e.g. exact-match accuracy | adoption decisions |
+| counter_metric (illustrative, ML) | A quantity that must not regress, e.g. single-hop accuracy | guards against tunnel vision on the headline |
+| inter_plate_variance (illustrative, wet-lab) | Spread of control wells across plates; lower is better | confirms the normalization actually helped |
+| p99_latency_ms (illustrative, systems) | 99th-percentile request latency; lower is better | the real target when averages hide tail spikes |
+
+Common pitfall: optimizing a single headline metric with no counter-metric is how silent regressions ship. Every headline needs at least one guard.
+
+## 2. Verdict Vocabulary
+
+Every {{EXPERIMENT_UNIT_LABEL}} ends with exactly one verdict from this list.
+
+| Verdict | Meaning | When to use |
+|---|---|---|
+| ACCEPT | Main metric improves and any regression is within tolerance; adopted into the base | The headline rises and every counter-metric holds; update the base in `docs/method/algorithmic-levers.md` section 1 |
+| GREY | Inconclusive: a regression exists but the mechanism or a partial gain is still valuable | Mixed result you want to keep reasoning about; park it, do not adopt or bury it |
+| REJECT-SOFT | Fails adoption but yields useful falsification or a partial improvement | The change underperforms yet teaches something; it may inform a later lever |
+| REJECT-HARD | Clearly breaks one or more main metrics | A definite dead end; add a row to `docs/method/algorithmic-levers.md` section 3 so it is not revived |
+| COMPLETED | A forensic or analysis task finished; not a performance verdict | Use for Analyze-mode work that produced a conclusion, not a metric delta |
+
+Decision aid: headline up and counters held is ACCEPT; headline up but a counter broke is GREY; headline flat or down with something learned is REJECT-SOFT; a main metric clearly broken is REJECT-HARD.
+
+## 3. Cross-{{EXPERIMENT_UNIT_LABEL}} Comparison Procedure
+
+1. Pull the relevant columns from `docs/evaluation/comparison.md`; never retype numbers from memory.
+2. Compare each {{EXPERIMENT_UNIT_LABEL}} against the baseline column on the metrics in section 1, headline and counters together.
+3. Confirm only one component changed between the columns being compared (see `docs/concepts/core-concepts.md` section 3); if more changed, the delta is not attributable and the verdict is GREY at best.
+4. Check the delta clears noise: if run-to-run variation is unknown, a repeat run on the baseline establishes it before a small gain is believed.
+5. Assign one verdict from section 2 and record it in `docs/project/project-status.md`.
+6. If the verdict is REJECT-HARD or a reject-on-principle, add a row to `docs/method/algorithmic-levers.md` section 3.
+
+## 4. Required Visualizations
+
+The figures a {{EXPERIMENT_UNIT_LABEL}} should produce so a result can be inspected, not just trusted. A number can be right and still misleading; the figure is where a hidden distribution shift or outlier becomes visible. Fill in the list; the items below are illustrative.
+
+- Metric-vs-baseline bar chart (illustrative): one bar per metric in section 1, baseline and current {{EXPERIMENT_UNIT_LABEL}} side by side, so a regression is visible at a glance.
+- Distribution overlay (illustrative): histogram or box plot of the headline metric per item, baseline vs current, to catch a mean that moved for the wrong reason.
+- Failure-case panel (illustrative): a handful of the worst items under the current {{EXPERIMENT_UNIT_LABEL}}, to ground the next debugging pass in `docs/evaluation/debugging-guide.md`.
+
+## 5. Worked Verdict Example
+
+Example (illustrative): E2 in `docs/evaluation/comparison.md` raises primary_metric from 0.812 to 0.857 while counter_metric moves 0.904 to 0.901 and cost rises 2 units. One component changed, and a baseline repeat showed run-to-run noise near 0.004, so +0.045 is real and the -0.003 counter move is within noise. Verdict: ACCEPT. The base in `docs/method/algorithmic-levers.md` section 1 is updated and the verdict (not the numbers) is cascaded to `docs/project/project-status.md`.
+
+<!-- Add the project-specific figures and a real worked verdict here as results accumulate. Keep the figure list short and tied to the metrics in section 1. -->

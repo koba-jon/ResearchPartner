@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "_about": "Classifies each RENDERED output path. framework = re-rendered by `make update` (update.py protects local edits via *.rp-new). project = seeded once at init, never re-rendered. conditional = framework-owned only when `when` holds, else not produced. ignore = never produced. Most-specific glob wins; '**' spans directories, '*' spans one segment.",
+  "rules": [
+    { "glob": "docs/operations/auto-mode.md", "owner": "conditional", "when": { "ENABLE_AUTO_MODE": "yes" }, "_comment": "Auto mode (autonomous orchestration) subsystem" },
+    { "glob": "GETTING_STARTED.md", "owner": "conditional", "when": { "GENERATE_MANUAL": "yes" }, "_comment": "auto-generated per-clone manual" },
+
+    { "glob": "docs/operations/**", "owner": "framework", "_comment": "operating engine: modes, rules, prompt-factory, guard contract, timing, etc." },
+
+    { "glob": "docs/README.md", "owner": "framework" },
+    { "glob": "docs/entrypoint.md", "owner": "framework", "_comment": "fully framework; fast-summary is a pointer to project-status" },
+    { "glob": "docs/concepts/README.md", "owner": "framework" },
+    { "glob": "docs/concepts/glossary.md", "owner": "framework", "_comment": "language policy + generic operating terms; PRJ terms section grows in place" },
+    { "glob": "docs/method/README.md", "owner": "framework" },
+    { "glob": "docs/evaluation/README.md", "owner": "framework" },
+    { "glob": "docs/evaluation/evaluation-and-visualization.md", "owner": "framework", "_comment": "generic verdict vocabulary + viz method; metric section is a seeded scaffold" },
+    { "glob": "docs/project/README.md", "owner": "framework" },
+    { "glob": "docs/project/themes/README.md", "owner": "framework" },
+    { "glob": "docs/project/themes/theme-rules.md", "owner": "framework" },
+    { "glob": "docs/project/backlog/README.md", "owner": "framework" },
+    { "glob": "docs/writing/README.md", "owner": "framework" },
+    { "glob": "docs/writing/paper-writing-guide.md", "owner": "framework" },
+
+    { "glob": "README.md", "owner": "project", "_comment": "the clone's own README, rendered from README.clone.md.tmpl" },
+    { "glob": "project-instructions.txt", "owner": "project", "_comment": "paste-ready Project Instructions" },
+    { "glob": "researchpartner.config.json", "owner": "ignore" },
+
+    { "glob": "docs/**", "owner": "project", "_comment": "catch-all: accumulating project state (status, comparison, records, backlog bodies, method/concept bodies, debugging, related-work)" }
+  ]
+}
