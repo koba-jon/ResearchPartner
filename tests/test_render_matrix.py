@@ -84,6 +84,17 @@ class MatrixCase(unittest.TestCase):
         self.assertIn("4.6 Docs Localization", pf)
         self.assertIn("4.7 Project Bootstrap", pf)
 
+    def test_every_mode_has_linked_file(self):
+        # 8 modes <-> 8 protocol files <-> every one linked from the router.
+        clone = self._render("modes", ENABLE_AUTO_MODE="yes")
+        om = u.read(os.path.join(clone, "docs", "operations", "operation-modes.md"))
+        for m in ("investigate", "design", "implement", "experiment",
+                  "analysis", "write", "auto", "maintenance"):
+            rel = "docs/operations/%s-mode.md" % m
+            self.assertTrue(os.path.exists(os.path.join(clone, *rel.split("/"))),
+                            "missing mode file: %s" % rel)
+            self.assertIn(rel, om, "operation-modes.md does not link %s" % rel)
+
 
 if __name__ == "__main__":
     unittest.main()
