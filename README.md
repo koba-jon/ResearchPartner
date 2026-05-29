@@ -106,7 +106,7 @@ Claude Code reads `docs/` straight from the repo, so there is nothing to upload 
 
 ### 6. Set up the Claude Chat (with Projects)
 
-1. In **claude.ai**, create a new **Project** for your research.
+1. In **Claude Chat**, create a new **Project** for your research.
 2. Open the Project's **custom instructions** and paste the entire contents of **`project-instructions.txt`** (rendered at your repo root in step 3). This is what makes Claude behave as your Research Partner: read `docs/entrypoint.md` first each session, reply in your language, follow the modes and rules.
 3. **Give the Project access to your `docs/`** so it can actually follow "read `docs/entrypoint.md` first." Pick whichever your setup supports:
    - **Connect the repo (best):** if you use a repository/GitHub connector (or an MCP server that exposes the repo), connect your private ResearchPartner repo. The Research Partner can then open `docs/entrypoint.md` and pull other docs on demand.
