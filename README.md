@@ -44,10 +44,10 @@ The base is public; your instance must be private.
 Then clone the base, detach it as `upstream`, and point `origin` at the empty repo you just created:
 
 ```bash
-git clone https://github.com/koba-jon/ResearchPartner.git <your-repo-name>   # local dir name is up to you
+git clone https://github.com/koba-jon/ResearchPartner.git <your-repo-name>
 cd <your-repo-name>
-git remote rename origin upstream                       # keep the base as 'upstream' for updates
-git remote add origin https://github.com/<you>/<your-repo-name>.git   # the EMPTY private repo from above
+git remote rename origin upstream
+git remote add origin https://github.com/<you>/<your-repo-name>.git
 ```
 
 (Prefer to let setup do the rename? Skip the `git remote rename` line and pass `--adopt-base-as-upstream` to `init.py` in step 3.)
@@ -59,7 +59,6 @@ Move the clone so it sits **inside** your project's working directory (the folde
 ```
 <PROJECT_ROOT>/                 <- your workspace (PROJECT_ROOT)
 ├── src/                     <- your code
-├── data/  results/  ...
 └── <your-repo-name>         <- this clone (holds docs/ + scripts)
 ```
 
