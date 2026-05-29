@@ -27,7 +27,9 @@ framework, not any individual clone (a clone records its own history in git).
 - Optional subsystems (configurable): source mirror, Auto mode, generated
   `GETTING_STARTED.md` manual.
 - First-class documentation playbook with multi-domain worked examples.
-- Test suite (`make test`, stdlib `unittest`) and GitHub Actions CI across
-  Python 3.8-3.12.
+- Test suite (`make test`, stdlib `unittest`). CI is shipped as an inert
+  `ci.example.yml` (opt-in: add as `.github/workflows/ci.yml` via the GitHub web
+  UI) so that cloning and pushing with a standard token never hits GitHub's
+  `workflow`-scope restriction; it runs lint-base + the suite on Python 3.8-3.12.
 
 [Unreleased]: https://github.com/

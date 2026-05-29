@@ -22,16 +22,20 @@ You drive the loop; the docs keep both tools in sync across sessions.
 
 ### 1. Make your own private copy
 
-The base is public; your instance must be private. Clone the base, detach it as `upstream`, and point `origin` at a new **private** repo you create on your account:
+The base is public; your instance must be private.
+
+**First, create a new EMPTY private repository on GitHub** — no README, no license, no `.gitignore`, just the bare repo (e.g. `<you>/my-research`). You will push to it in step 4, so it must exist first (otherwise `git push` reports "Repository not found").
+
+Then clone the base, detach it as `upstream`, and point `origin` at the empty repo you just created:
 
 ```bash
-git clone https://github.com/koba-jon/ResearchPartner.git
-cd ResearchPartner
+git clone https://github.com/koba-jon/ResearchPartner.git my-research   # local dir name is up to you
+cd my-research
 git remote rename origin upstream                       # keep the base as 'upstream' for updates
-git remote add origin https://github.com/<you>/<your-private-name>.git
+git remote add origin https://github.com/<you>/my-research.git   # the EMPTY private repo from above
 ```
 
-(Prefer to let setup do the rename? Skip the `git remote` lines and pass `--adopt-base-as-upstream` to `init.py` in step 3.)
+(Prefer to let setup do the rename? Skip the `git remote rename` line and pass `--adopt-base-as-upstream` to `init.py` in step 3.)
 
 ### 2. Place it inside your project workspace
 
@@ -103,6 +107,8 @@ make help           # list all targets
 ```
 
 No `make`? Every target is a thin wrapper — run the script directly (e.g. `python3 scripts/check_docs_consistency.py`). See `SETUP.md` section 11.
+
+Want GitHub Actions CI on your repo? The template ships CI as an inert `ci.example.yml` (not an active workflow, so cloning and pushing with a standard token never hits GitHub's `workflow`-scope wall). Enable it by adding that YAML as `.github/workflows/ci.yml` via GitHub's web UI. See `ci.example.yml` for the one-step instructions.
 
 ## What you get
 

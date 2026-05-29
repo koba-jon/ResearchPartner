@@ -10,6 +10,7 @@ origin->upstream rename). init NEVER pushes and NEVER creates a remote.
 
 import argparse
 import os
+import re
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -43,6 +44,31 @@ def ask_yesno(prompt, default="yes"):
     return ask_choice(prompt, ["yes", "no"], default)
 
 
+# Guards so a stray multi-line paste (each pasted line answers the next prompt)
+# cannot silently produce a garbage, committed instance. A rejected value
+# re-prompts, consuming the bad line rather than accepting it.
+_NAME_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9 ._-]{0,59}$")
+_PASTE_RE = re.compile(r"[=(){};]|^#")
+
+
+def ask_clean(prompt, default=""):
+    """A short plain value (rejects code-like / oversized stray-paste lines)."""
+    while True:
+        v = ask(prompt, default)
+        if len(v) <= 80 and not _PASTE_RE.search(v):
+            return v
+        fw.warn("  that looks like a stray paste; enter a short plain value.")
+
+
+def ask_name(prompt, default=""):
+    """A name/identifier: letters, digits, space, and . _ - (1-60 chars)."""
+    while True:
+        v = ask(prompt, default)
+        if _NAME_RE.match(v):
+            return v
+        fw.warn("  use letters/digits/space and . _ - (1-60 chars).")
+
+
 def interview(root):
     cfg = dict(fw.DEFAULT_CONFIG)
     print("\n== Phase 0: working location & compute ==")
@@ -72,22 +98,22 @@ def interview(root):
         cfg["INTENT_FIRST_STEP"] = ask("First planned step")
 
     print("\n== Phase 2: identity ==")
-    cfg["PROJECT_NAME"] = ask("Project name", os.path.basename(cfg["PROJECT_ROOT"]))
-    cfg["USER_NAME"] = ask("Your name (the human collaborator)")
-    cfg["CHAT_LANG"] = ask("Chat reply language", "English")
-    cfg["DOCS_LANG"] = ask("Docs language", "English")
+    cfg["PROJECT_NAME"] = ask_name("Project name", os.path.basename(cfg["PROJECT_ROOT"]))
+    cfg["USER_NAME"] = ask_clean("Your name (the human collaborator)")
+    cfg["CHAT_LANG"] = ask_clean("Chat reply language", "English")
+    cfg["DOCS_LANG"] = ask_clean("Docs language", "English")
     cfg["DOCS_LANG_IS_ASCII"] = ask_yesno(
         "Are docs written only in ASCII letters (no CJK/Cyrillic/etc.)?",
         fw.docs_lang_default_ascii(cfg["DOCS_LANG"]))
-    cfg["CODE_LANG"] = ask("Code / prompt language", "English")
+    cfg["CODE_LANG"] = ask_clean("Code / prompt language", "English")
 
     print("\n== Phase 3: options ==")
     cfg["GENERATE_MANUAL"] = ask_yesno("Generate a GETTING_STARTED manual?", "yes")
     cfg["SRC_MIRROR_ENABLED"] = ask_yesno(
         "Mirror your source code into this repo's src/?",
         "yes" if scan["has_code"] else "no")
-    cfg["EXPERIMENT_UNIT_LABEL"] = ask("Label for one tracked experiment", "Experiment")
-    cfg["ANALYSIS_RECORD_LABEL"] = ask("Label for one recorded analysis/finding", "Note")
+    cfg["EXPERIMENT_UNIT_LABEL"] = ask_clean("Label for one tracked experiment", "Experiment")
+    cfg["ANALYSIS_RECORD_LABEL"] = ask_clean("Label for one recorded analysis/finding", "Note")
     cfg["ENABLE_AUTO_MODE"] = ask_yesno(
         "Enable Auto mode (autonomous orchestration of the other modes)?", "no")
     return cfg

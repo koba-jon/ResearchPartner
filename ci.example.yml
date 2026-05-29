@@ -1,0 +1,35 @@
+# Example GitHub Actions CI for a ResearchPartner repo (OPT-IN; not active).
+#
+# This template does NOT ship an active workflow on purpose: a workflow file
+# under .github/workflows/ is inherited by every clone, and pushing it with a
+# normal token is blocked by GitHub ("refusing to allow a Personal Access Token
+# to create or update workflow ... without `workflow` scope"). Keeping CI as this
+# inert example means anyone can clone and push with a standard token.
+#
+# To enable CI on YOUR repo, add it the easy way: on GitHub, "Add file" ->
+# "Create new file" -> path `.github/workflows/ci.yml` -> paste the YAML below ->
+# commit. (The web editor commits with workflow permission automatically.)
+# Alternatively, push it with a PAT that has the `workflow` scope, or over SSH.
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Base template lint (templates, manifest, token + marker sanity)
+        run: python3 scripts/lint_base.py
+      - name: Test suite (stdlib unittest; no third-party deps)
+        run: python3 -m unittest discover -s tests -p 'test_*.py'
