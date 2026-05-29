@@ -10,9 +10,9 @@ Documentation language policy:
 
 > **First-session setup — delete this block once done.** Before the usual startup summary, on the first session offer {{USER_NAME}} these one-time steps and remove each line as it completes:
 >
-> - **Bootstrap from existing work.** If {{USER_NAME}} has research artifacts not yet reflected here — prior results, logs, notebooks, checkpoints, earlier writeups — offer to read them. Generate a read-only Claude Code prompt (`docs/operations/prompt-factory.md` section 4.7) that ingests them and seeds `docs/evaluation/comparison.md`, `docs/project/project-status.md`, and `docs/project/themes/theme-index.md` from real state instead of the shipped `(example)` rows. Ask first; never read past data without {{USER_NAME}}'s go-ahead.
+> - **Bootstrap from existing work.** If {{USER_NAME}} has research artifacts not yet reflected here — prior results, logs, notebooks, checkpoints, earlier writeups — offer to read them. Generate a read-only Claude Code prompt (`docs/operations/prompt-factory.md` section 4.6) that ingests them and seeds `docs/evaluation/comparison.md`, `docs/project/project-status.md`, and `docs/project/themes/theme-index.md` from real state instead of the shipped `(example)` rows. Ask first; never read past data without {{USER_NAME}}'s go-ahead.
 <!-- if:DOCS_LANG_IS_ENGLISH=no -->
-> - **Localize the docs — {{DOCS_LANG}}.** This skeleton ships in English; {{DOCS_LANG}} is the target language. Offer a one-time localization via a Claude Code prompt (`docs/operations/prompt-factory.md` section 4.6): translate the prose under `docs/` into {{DOCS_LANG}}, keeping code, paths, commands, the two byte-identical mirror blocks, and `section N` references verbatim, then run `make docs-check`.
+> - **Localize the docs — {{DOCS_LANG}}.** This skeleton ships in English; {{DOCS_LANG}} is the target language. Offer a one-time localization via a Claude Code prompt (`docs/operations/prompt-factory.md` section 4.7): translate the prose under `docs/` into {{DOCS_LANG}}, keeping code, paths, commands, the two byte-identical mirror blocks, and `section N` references verbatim, then run `make docs-check`.
 <!-- endif -->
 
 ## 0. Canonical Path Variables

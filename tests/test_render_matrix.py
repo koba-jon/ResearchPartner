@@ -60,8 +60,8 @@ class MatrixCase(unittest.TestCase):
         ep = u.read(os.path.join(clone, "docs", "entrypoint.md"))
         self.assertIn("First-session setup", ep)
         self.assertNotIn("Localize the docs", ep)
-        self.assertIn("4.7 Project Bootstrap", pf)
-        self.assertNotIn("4.6 Docs Localization", pf)
+        self.assertIn("4.6 Project Bootstrap", pf)
+        self.assertNotIn("4.7 Docs Localization", pf)
 
     def test_all_on(self):
         clone = self._render("all", SRC_MIRROR_ENABLED="yes", ENABLE_AUTO_MODE="yes",
@@ -81,8 +81,8 @@ class MatrixCase(unittest.TestCase):
         self.assertIn("First-session setup", ep)
         self.assertIn("Localize the docs", ep)
         pf = u.read(os.path.join(clone, "docs", "operations", "prompt-factory.md"))
-        self.assertIn("4.6 Docs Localization", pf)
-        self.assertIn("4.7 Project Bootstrap", pf)
+        self.assertIn("4.7 Docs Localization", pf)
+        self.assertIn("4.6 Project Bootstrap", pf)
 
     def test_every_mode_has_linked_file(self):
         # 8 modes <-> 8 protocol files <-> every one linked from the router.

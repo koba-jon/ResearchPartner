@@ -100,28 +100,7 @@ Edit first: <file>. Cascade: <files from entrypoint section 5>.
 Run make docs-check from the docs repo and report the result before finishing.
 <!-- if:ENABLE_PUBLISH_STEP=yes -->Then Publish: commit + push the docs repo so the doc updates land upstream (see the Publish section).<!-- endif -->
 ```
-<!-- if:DOCS_LANG_IS_ENGLISH=no -->
-### 4.6 Docs Localization (one-time)
-
-The docs skeleton ships in English; this prompt translates it into {{DOCS_LANG}}. Offer it on the first session (`docs/entrypoint.md` shows a "First-session setup" block) and again after `make update` brings in new English sections.
-
-```text
-<header>
-Context: the docs/ skeleton is in English; {{DOCS_LANG}} is the target docs language.
-Task: translate the PROSE under docs/ into {{DOCS_LANG}}. Keep verbatim (do NOT translate):
-  code identifiers, file paths, commands (e.g. make docs-check), metric names, the
-  path-variable table values, and `file.md section N` references. Leave the two
-  byte-identical mirror blocks unchanged unless you translate BOTH copies identically
-  and re-render project-instructions.txt.
-Edit scope: docs/**. Read-only: scripts/**, templates/**, *.json, Makefile.
-Deliverable: the translated docs + the list of files changed.
-Verification: make docs-check passes (mirror blocks and section refs intact). Then remove
-  the localization line from the "First-session setup" block in docs/entrypoint.md.
-<!-- if:ENABLE_PUBLISH_STEP=yes -->Publish: after Verification passes, commit + push the docs repo (see the Publish section).<!-- endif -->
-```
-<!-- endif -->
-
-### 4.7 Project Bootstrap (history ingest, one-time)
+### 4.6 Project Bootstrap (history ingest, one-time)
 
 For a clone adopted onto an existing project: read {{USER_NAME}}'s prior artifacts (read-only) and seed the living docs from real state instead of the shipped `(example)` placeholders. Offer it on the first session (`docs/entrypoint.md` shows a "First-session setup" block); the structural `init` scan deliberately skips data/result directories, so this is where their contents first enter the docs.
 
@@ -143,6 +122,27 @@ Verification: make docs-check passes and every recorded number cites a real sour
   remove the "First-session setup" block in docs/entrypoint.md.
 <!-- if:ENABLE_PUBLISH_STEP=yes -->Publish: after Verification passes, commit + push the docs repo (see the Publish section).<!-- endif -->
 ```
+<!-- if:DOCS_LANG_IS_ENGLISH=no -->
+
+### 4.7 Docs Localization (one-time)
+
+The docs skeleton ships in English; this prompt translates it into {{DOCS_LANG}}. Offer it on the first session (`docs/entrypoint.md` shows a "First-session setup" block) and again after `make update` brings in new English sections.
+
+```text
+<header>
+Context: the docs/ skeleton is in English; {{DOCS_LANG}} is the target docs language.
+Task: translate the PROSE under docs/ into {{DOCS_LANG}}. Keep verbatim (do NOT translate):
+  code identifiers, file paths, commands (e.g. make docs-check), metric names, the
+  path-variable table values, and `file.md section N` references. Leave the two
+  byte-identical mirror blocks unchanged unless you translate BOTH copies identically
+  and re-render project-instructions.txt.
+Edit scope: docs/**. Read-only: scripts/**, templates/**, *.json, Makefile.
+Deliverable: the translated docs + the list of files changed.
+Verification: make docs-check passes (mirror blocks and section refs intact). Then remove
+  the localization line from the "First-session setup" block in docs/entrypoint.md.
+<!-- if:ENABLE_PUBLISH_STEP=yes -->Publish: after Verification passes, commit + push the docs repo (see the Publish section).<!-- endif -->
+```
+<!-- endif -->
 
 ## 5. A Worked Example (illustrative)
 
