@@ -159,11 +159,13 @@ def interview(root):
     cfg["CHAT_LANG"] = ask_clean("Chat reply language", "English")
     cfg["DOCS_LANG"] = ask_clean("Docs language", "English")
     cfg["CODE_LANG"] = ask_clean("Code / prompt language", "English")
-    cfg["DOCS_LANG_IS_ASCII"] = fw.docs_lang_default_ascii(cfg["DOCS_LANG"])
+    if fw.docs_lang_is_english(cfg["DOCS_LANG"]) == "no":
+        print("\n  Note: the shipped docs are written in English. With DOCS_LANG=%s, your"
+              % cfg["DOCS_LANG"])
+        print("  Research Partner offers a one-time localization on the first session (a")
+        print("  banner in docs/entrypoint.md); new docs are then authored in %s." % cfg["DOCS_LANG"])
     # The following are no longer asked; they take their DEFAULT_CONFIG values and can
     # be changed in config followed by `make update`:
-    #   DOCS_LANG_IS_ASCII   - derived just above from DOCS_LANG (non-ASCII docs, e.g.
-    #                          Japanese -> "no"); gates the docs character-policy guard.
     #   GENERATE_MANUAL ("yes")  - generate the GETTING_STARTED manual.
     #   ENABLE_AUTO_MODE ("yes") - include the Auto mode subsystem.
     #   EXPERIMENT_UNIT_LABEL ("Experiment") / ANALYSIS_RECORD_LABEL ("Note").
@@ -325,8 +327,6 @@ def main(argv=None):
 
     # Write outputs + config + render-baseline state (for update.py's rp-new safety)
     write_rendered(root, rendered)
-    if not str(cfg.get("DOCS_LANG_IS_ASCII", "")).strip():
-        cfg["DOCS_LANG_IS_ASCII"] = fw.docs_lang_default_ascii(cfg.get("DOCS_LANG", ""))
     fw.save_config(cfg, os.path.join(root, fw.CONFIG_FILE))
     manifest = fw.load_manifest(os.path.join(root, "ownership.json"))
     state = {rel: fw.sha_text(content) for rel, content in rendered.items()

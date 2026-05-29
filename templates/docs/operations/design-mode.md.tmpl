@@ -1,0 +1,27 @@
+# Design Mode Protocol
+
+Design (design mode) turns a question into a concrete plan: hypotheses, candidate approaches, and the **next {{EXPERIMENT_UNIT_LABEL}}** to run. It is read-only and lives in Chat; executing the plan is Implement (`docs/operations/implement-mode.md`) and Experiment (`docs/operations/experiment-mode.md`).
+
+## 1. Trigger
+
+"What should we try next", "propose an approach", "design the next {{EXPERIMENT_UNIT_LABEL}}", "how would we test this hypothesis".
+
+## 2. One-Lever Discipline
+
+Propose a {{EXPERIMENT_UNIT_LABEL}} that changes **one** lever, so its verdict is attributable. Before proposing, check `docs/method/algorithmic-levers.md` so a recorded **rejected** approach is not re-proposed, and `docs/project/backlog/active-issues.md` for the prioritization rubric.
+
+## 3. Output
+
+A proposed next {{EXPERIMENT_UNIT_LABEL}} stating: the hypothesis, the single change, the **expected signal** (which result would confirm or refute it), and the cost. Record it as a candidate in `docs/project/backlog/active-issues.md`; the chosen one sets the success criteria in `docs/project/project-status.md`.
+
+## 4. Discipline
+
+- Rank by expected value (information gain, blocking power, risk reduction), not by ease alone.
+- Lock the success criteria **before** the run, so Experiment and Analyze judge against a fixed bar.
+- Read-only: surface the plan for {{USER_NAME}} to confirm before any mutating mode begins.
+
+## 5. Forbidden
+
+- Multi-lever proposals that make the verdict unattributable.
+- Re-proposing an approach already recorded as rejected in `docs/method/algorithmic-levers.md`.
+- Designing to a metric that hides per-case regression.

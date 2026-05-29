@@ -46,11 +46,13 @@ class GuardCase(unittest.TestCase):
         self.assertEqual(r.returncode, 1)
         self.assertIn("does-not-exist.md", r.stderr)
 
-    def test_non_ascii_letters_fail_when_ascii(self):
-        u.append(self.doc("project/project-status.md"), "\nPrivet: Привет\n")
+    def test_greek_and_nonlatin_pass(self):
+        # Docs are language-agnostic: there is no character/script policy, so
+        # Greek math letters and any non-Latin script pass even on an English clone.
+        u.append(self.doc("project/project-status.md"),
+                 "\nTune the loss with weights alpha, beta: α, β, λ, σ. Привет. 日本語.\n")
         r = u.guard(self.clone)
-        self.assertEqual(r.returncode, 1)
-        self.assertIn("non-ASCII letters", r.stderr)
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
 
     def test_missing_required_file_fails(self):
         os.remove(self.doc("operations/rules/forbidden-actions.md"))
@@ -76,7 +78,7 @@ class GuardCase(unittest.TestCase):
 
 
 class JapaneseDocsCase(unittest.TestCase):
-    """A non-ASCII-docs clone must NOT be flagged for its script."""
+    """A non-English docs clone passes: docs are language-agnostic (Unicode)."""
 
     def test_japanese_docs_pass(self):
         tmp = tempfile.mkdtemp(prefix="rp-ja-")
@@ -84,7 +86,7 @@ class JapaneseDocsCase(unittest.TestCase):
             proj = os.path.join(tmp, "proj")
             os.makedirs(proj)
             clone = os.path.join(tmp, "clone")
-            # DOCS_LANG_IS_ASCII omitted on purpose -> derived "no" from DOCS_LANG
+            # No character/script policy; a Japanese clone needs no special flag.
             r = u.make_clone(clone, proj, DOCS_LANG="Japanese", PROJECT_NAME="Acme")
             self.assertEqual(r.returncode, 0, r.stderr)
             u.append(os.path.join(clone, "docs", "project", "project-status.md"),

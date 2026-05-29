@@ -1,0 +1,25 @@
+# Implement Mode Protocol
+
+Implement (implement mode) creates or changes **code and specifications** so a {{EXPERIMENT_UNIT_LABEL}} can be run. Running it and recording the result is Experiment mode (`docs/operations/experiment-mode.md`). Implement is a mutating, Claude Code mode.
+
+## 1. Trigger
+
+"Write / change the code", "implement the spec", "add the option for X".
+
+## 2. Default-Path Discipline
+
+Gate a new behavior behind a flag that defaults **OFF**, so the default path stays bit-identical until the flag is explicitly enabled. State the edit scope up front: which files may change, which are read-only. Subtract or reuse before adding.
+
+## 3. The Prompt
+
+Implement work runs as a Claude Code prompt built from the **Implement skeleton in `docs/operations/prompt-factory.md` section 4.1** -- do not restate that contract here. Honor the path-variable header and the constraints in `docs/operations/rules/operational-constraints.md` (notably source-read-only-outside-scope, brace paths, and state sync).
+
+## 4. Output
+
+The patch plus a one-line summary of what changed and what stayed identical with the flag OFF. Verification is the cheapest rung that proves it: it imports / builds, and the default path is unchanged.
+
+## 5. Forbidden
+
+- Editing files outside the stated scope.
+- Changing default behavior silently (no off-by-default gate).
+- `git commit` / `git push` against the non-git workspace `{{PROJECT_VAR_BRACE}}`.

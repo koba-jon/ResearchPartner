@@ -4,9 +4,16 @@ This is the lightweight entrypoint for the {{PROJECT_NAME}} shared knowledge bas
 
 Documentation language policy:
 
-- All files under `docs/` are written in {{DOCS_LANG}}.
+- Docs under `docs/` are maintained in {{DOCS_LANG}}. Code identifiers, file paths, commands, and metric names stay verbatim in their original form; never translate them.
 - Claude Chat replies to {{USER_NAME}} are written in {{CHAT_LANG}}, unless {{USER_NAME}} explicitly asks otherwise.
 - Claude Code prompts may be written in {{CODE_LANG}}, but they must preserve the path and operational constraints below.
+
+> **First-session setup — delete this block once done.** Before the usual startup summary, on the first session offer {{USER_NAME}} these one-time steps and remove each line as it completes:
+>
+> - **Bootstrap from existing work.** If {{USER_NAME}} has research artifacts not yet reflected here — prior results, logs, notebooks, checkpoints, earlier writeups — offer to read them. Generate a read-only Claude Code prompt (`docs/operations/prompt-factory.md` section 4.7) that ingests them and seeds `docs/evaluation/comparison.md`, `docs/project/project-status.md`, and `docs/project/themes/theme-index.md` from real state instead of the shipped `(example)` rows. Ask first; never read past data without {{USER_NAME}}'s go-ahead.
+<!-- if:DOCS_LANG_IS_ENGLISH=no -->
+> - **Localize the docs — {{DOCS_LANG}}.** This skeleton ships in English; {{DOCS_LANG}} is the target language. Offer a one-time localization via a Claude Code prompt (`docs/operations/prompt-factory.md` section 4.6): translate the prose under `docs/` into {{DOCS_LANG}}, keeping code, paths, commands, the two byte-identical mirror blocks, and `section N` references verbatim, then run `make docs-check`.
+<!-- endif -->
 
 ## 0. Canonical Path Variables
 
@@ -91,7 +98,12 @@ The master copy is `docs/operations/project-memory-and-instructions.md` section 
 | `docs/operations/session-kickoff.md` | Task-time scenario protocol | high |
 | `docs/operations/consistency-guard.md` | Docs edit cascade guard | high |
 | `docs/operations/operation-modes.md` | Task mode router | high |
+| `docs/operations/investigate-mode.md` | Investigate mode protocol | low |
+| `docs/operations/design-mode.md` | Design mode protocol | low |
+| `docs/operations/implement-mode.md` | Implement mode protocol | mid |
+| `docs/operations/experiment-mode.md` | Experiment mode protocol | mid |
 | `docs/operations/analysis-mode.md` | Analysis mode protocol | high |
+| `docs/operations/write-mode.md` | Write mode protocol | low |
 | `docs/operations/prompt-factory.md` | Prompt patterns | high |
 | `docs/operations/maintenance-mode.md` | Docs consistency, cleanup, and reflection | mid |
 | `docs/operations/project-memory-and-instructions.md` | Project Instructions triggers | high |
@@ -136,7 +148,7 @@ Keep numeric tables only in `docs/evaluation/comparison.md`; other files summari
 
 ### 5.3 File Lifecycle
 
-Creating, deleting, or renaming a doc means: update the nearest directory README or router, update this file map and cascade, fix every reference with rg, and run `make docs-check`. The guard in `scripts/check_docs_consistency.py` enforces required files, routers, links, the two byte-identical mirror blocks, and (when DOCS_LANG_IS_ASCII=yes) an ASCII-only policy.
+Creating, deleting, or renaming a doc means: update the nearest directory README or router, update this file map and cascade, fix every reference with rg, and run `make docs-check`. The guard in `scripts/check_docs_consistency.py` enforces required files, routers, links, and the two byte-identical mirror blocks. Docs are language-agnostic (Unicode); there is no character/script policy.
 
 ## 6. Single Sources Of Truth
 

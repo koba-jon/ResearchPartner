@@ -22,15 +22,13 @@ The full routing table is in `docs/entrypoint.md` section 5. The common classes 
 - **Required files** exist (entrypoint, the rules bodies, the backlog bodies, the guard contract, the Makefile and hook), filtered by the ownership manifest so a disabled subsystem is not demanded.
 - **Markdown links** in `docs/**` resolve on disk.
 - **Section references** of the form `path.md section N` point to real numbered headings.
-<!-- if:DOCS_LANG_IS_ASCII=yes -->- **Character policy**: docs contain no CJK characters (the docs language is ASCII).<!-- endif -->
-<!-- if:DOCS_LANG_IS_ASCII=no -->- **Character policy**: skipped (the docs language is a non-ASCII script).<!-- endif -->
 - **Routers reach bodies**: the rules README lists all rule files; `shared-instructions.md` links all rule paths; the backlog README lists all backlog bodies.
 - **Byte-identical mirror blocks**: the Project Instructions block (`entrypoint.md` section 2 vs this section's master in `project-memory-and-instructions.md` section 2) and the canonical prompt header (`entrypoint.md` section 0 vs `prompt-factory.md` section 2) must match exactly. Both come from single-source fragments, so they cannot drift unless a template is hand-broken.
 - **Maintenance Mode N**: the header N matches the maximum activation-log row, when present.
 
 ## 4. Section-Reference Discipline
 
-Refer to sections in ASCII form, `file.md section N`, in prose. The guard validates the cross-file and same-file numeric forms when written with the section sign; the ASCII form is the safe default and is not machine-validated.
+Refer to sections in plain form, `file.md section N`, in prose. The guard validates the cross-file and same-file numeric forms when written with the section sign; the plain form is the safe default and is not machine-validated.
 
 ## 5. Rename Discipline
 

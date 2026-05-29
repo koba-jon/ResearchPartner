@@ -2,18 +2,18 @@
 
 Every request to the {{ROLE_TERM}} resolves to one operating mode. There are **six lifecycle modes** that follow the research loop, and **two cross-cutting modes** that orchestrate or maintain it. Plain question-answering is the default and is not a mode.
 
-Read this file when the task mode is ambiguous. Classify first, then act under that mode's discipline. Startup order is mastered by `docs/entrypoint.md`.
+Read this file when the task mode is ambiguous. Classify first, then act under that mode's discipline. Startup order is mastered by `docs/entrypoint.md`. Each mode links to its own protocol file (lifecycle modes in the table below, cross-cutting modes in section 2); this page is the router and the at-a-glance contract.
 
 ## 1. Lifecycle Modes
 
-| Mode | Purpose | Safety | Where |
+| Mode | Purpose | Seat & safety | Protocol |
 |---|---|---|---|
-| Investigate | Gather **external / existing** knowledge: literature, prior work, methods, web search, and reading the current codebase. | read-only (reaches external services) | Chat |
-| Design | Generate hypotheses and approaches, and plan the next {{EXPERIMENT_UNIT_LABEL}}. | read-only | Chat |
-| Implement | Create or change code and specifications. | mutating (code) | Code |
-| Experiment | Run an experiment **and record its results** back into the docs (ingestion is the closing step of this mode). | mutating + compute cost | Code |
-| Analyze | Draw conclusions from the project's **own** artifacts, **including critical verification** of those conclusions. | read-only | Chat / Code |
-| Write | Produce README, technical report, or paper prose. | mutating (docs only) | Chat |
+| Investigate | Gather **external / existing** knowledge: literature, prior work, methods, web search, and reading the current codebase. | Chat · read-only (reaches external services) | `docs/operations/investigate-mode.md` |
+| Design | Generate hypotheses and approaches, and plan the next {{EXPERIMENT_UNIT_LABEL}}. | Chat · read-only | `docs/operations/design-mode.md` |
+| Implement | Create or change code and specifications. | Code · mutating | `docs/operations/implement-mode.md` |
+| Experiment | Run an experiment **and record its results** back into the docs (ingestion is the closing step of this mode). | Code · mutating + compute cost | `docs/operations/experiment-mode.md` |
+| Analyze | Draw conclusions from the project's **own** artifacts, **including critical verification** of those conclusions. | Chat / Code · read-only | `docs/operations/analysis-mode.md` |
+| Write | Produce README, technical report, or paper prose. | Chat · mutating (docs only) | `docs/operations/write-mode.md` |
 
 Boundary between the two read-only research modes: **Investigate** brings in information from outside the project (or surveys code you have not yet internalized); **Analyze** reasons over results and artifacts the project already produced.
 

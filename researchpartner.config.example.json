@@ -5,9 +5,9 @@
   "_id": "Identity",
   "PROJECT_NAME": "Acme Vision",
   "USER_NAME": "Alex",
+  "_lang": "CHAT_LANG / DOCS_LANG / CODE_LANG may differ. Docs are language-agnostic (any Unicode script; Greek math letters are fine). A non-English DOCS_LANG seeds a one-time localization offer -- the skeleton always ships in English.",
   "CHAT_LANG": "English",
   "DOCS_LANG": "English",
-  "DOCS_LANG_IS_ASCII": "yes",
   "CODE_LANG": "English",
 
   "_paths": "Working location (absolute paths). FRAMEWORK_REPO_DIR defaults to this clone's own directory if omitted.",
@@ -19,11 +19,11 @@
   "COMPUTE_ENV": "local-gpu",
   "COMPUTE_DRIVE": "",
 
-  "_subsystems": "Toggle the optional subsystems. init no longer asks any of these: SRC_MIRROR_ENABLED is auto-enabled when PROJECT_ROOT/src exists; GENERATE_MANUAL and ENABLE_AUTO_MODE default to 'yes'. ENABLE_PUBLISH_STEP defaults to 'no' and is opt-in; set it to 'yes' (together with SRC_MIRROR_ENABLED) to add a Publish closing step to the prompt-factory skeletons so generated prompts mirror src and push the docs repo after verification.",
+  "_subsystems": "Toggle the optional subsystems. init no longer asks any of these: SRC_MIRROR_ENABLED is auto-enabled when PROJECT_ROOT/src exists; GENERATE_MANUAL and ENABLE_AUTO_MODE default to 'yes'. ENABLE_PUBLISH_STEP defaults to 'yes': generated prompts end with a Publish step (commit + push the docs repo AFTER the task's verification; with SRC_MIRROR_ENABLED it also mirrors src). It assumes you completed the one-time origin setup (README step 4). Set it to 'no' to keep commit/push manual.",
   "SRC_MIRROR_ENABLED": "yes",
   "ENABLE_AUTO_MODE": "yes",
   "GENERATE_MANUAL": "yes",
-  "ENABLE_PUBLISH_STEP": "no",
+  "ENABLE_PUBLISH_STEP": "yes",
 
   "_vocabulary": "User-facing labels. GSAD used Wave / Theme.",
   "EXPERIMENT_UNIT_LABEL": "Experiment",

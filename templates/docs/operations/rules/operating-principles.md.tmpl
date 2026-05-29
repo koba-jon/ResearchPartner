@@ -50,8 +50,8 @@ Before writing a prompt:
 7. Use subtract-first constraints when extending templates.
 8. Verify smoke expected values against current files.
 9. If `docs/operations/project-memory-and-instructions.md` is triggered, include a Project Instructions candidate in deliverables.
-<!-- if:SRC_MIRROR_ENABLED=yes -->10. Do not confuse the non-git workspace root {{PROJECT_VAR_BRACE}} with the git docs repo {{REPO_VAR_BRACE}}.<!-- endif -->
-<!-- if:ENABLE_PUBLISH_STEP=yes -->11. When the task's result lands in the repo, end the prompt with the Publish step from `docs/operations/prompt-factory.md` (commit + push the docs repo {{REPO_VAR_BRACE}}; never the workspace).<!-- endif -->
+<!-- if:SRC_MIRROR_ENABLED=yes -->- Do not confuse the non-git workspace root {{PROJECT_VAR_BRACE}} with the git docs repo {{REPO_VAR_BRACE}}.<!-- endif -->
+<!-- if:ENABLE_PUBLISH_STEP=yes -->- When the task's result lands in the repo, end the prompt with the Publish step from `docs/operations/prompt-factory.md` (commit + push the docs repo {{REPO_VAR_BRACE}}; never the workspace) -- but only after the task's Verification confirms correctness. Publish never replaces review.<!-- endif -->
 
 ## 5. Confidence Levels
 

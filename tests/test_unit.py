@@ -115,12 +115,21 @@ class TestConfig(unittest.TestCase):
         self.assertEqual(c["REPO_VAR"], "ACME_VISION_DOCS")
         self.assertEqual(c["ROLE_TERM"], "Research Partner")
 
-    def test_docs_ascii_derived_from_lang(self):
-        self.assertEqual(ctx(DOCS_LANG="English")["DOCS_LANG_IS_ASCII"], "yes")
-        self.assertEqual(ctx(DOCS_LANG="Japanese")["DOCS_LANG_IS_ASCII"], "no")
+    def test_docs_lang_is_english_derived(self):
+        self.assertEqual(ctx(DOCS_LANG="English")["DOCS_LANG_IS_ENGLISH"], "yes")
+        self.assertEqual(ctx(DOCS_LANG="en")["DOCS_LANG_IS_ENGLISH"], "yes")
+        self.assertEqual(ctx(DOCS_LANG="Japanese")["DOCS_LANG_IS_ENGLISH"], "no")
+        self.assertEqual(ctx(DOCS_LANG="Francais")["DOCS_LANG_IS_ENGLISH"], "no")
 
-    def test_docs_ascii_explicit_wins(self):
-        self.assertEqual(ctx(DOCS_LANG="Japanese", DOCS_LANG_IS_ASCII="yes")["DOCS_LANG_IS_ASCII"], "yes")
+    def test_no_character_policy_flag(self):
+        # The character/script policy and its flag were removed entirely.
+        self.assertNotIn("DOCS_LANG_IS_ASCII", f.DEFAULT_CONFIG)
+        self.assertNotIn("DOCS_LANG_IS_ASCII", ctx())
+        self.assertFalse(hasattr(f, "docs_lang_default_ascii"))
+
+    def test_publish_step_default_on(self):
+        # Publish (commit+push the docs repo after Verification) is on by default.
+        self.assertEqual(f.DEFAULT_CONFIG["ENABLE_PUBLISH_STEP"], "yes")
 
     def test_validate_flags_bad_enum(self):
         bad = dict(BASE_REQUIRED(), COMPUTE_ENV="cloud")

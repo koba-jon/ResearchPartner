@@ -13,11 +13,21 @@ framework, not any individual clone (a clone records its own history in git).
 - Eight-mode operating taxonomy: six lifecycle modes (Investigate, Design,
   Implement, Experiment, Analyze, Write) plus two cross-cutting modes (Auto,
   Maintain). Result ingestion folds into Experiment, critical verification into
-  Analyze, reflection into Maintain.
-- Optional Publish closing step (`ENABLE_PUBLISH_STEP`, default `no`): when
-  enabled, the prompt-factory grows a Publish section so a generated Claude Code
-  prompt mirrors `src/` and commits+pushes the docs repo after verification
-  (never the non-git workspace).
+  Analyze, reflection into Maintain. Each mode has its own protocol file under
+  `docs/operations/` (e.g. `implement-mode.md`), and `operation-modes.md` is the
+  router that links all eight.
+- Publish closing step (`ENABLE_PUBLISH_STEP`, default `yes`): the prompt-factory
+  ends generated Claude Code prompts with a Publish step so that, *after the task's
+  Verification passes*, it mirrors `src/` and commits+pushes the docs repo (never
+  the non-git workspace). It assumes the one-time `origin` setup (README step 4) is
+  done; set it to `no` to keep commit/push manual. Publish never substitutes for
+  Verification.
+- First-session onboarding: a self-clearing "First-session setup" block in
+  `docs/entrypoint.md`. On the first session the Research Partner offers to
+  bootstrap the docs from existing artifacts (prior results, logs, notebooks,
+  writeups) via a read-only Claude Code ingest (`prompt-factory` section 4.7),
+  and -- for a non-English `DOCS_LANG` -- a one-time localization (section 4.6).
+  Both ask first, and the block is removed once done.
 - Base lint now flags single-brace token leaks (`${TOKEN}` where a `{{TOKEN}}`
   was meant), the bug class behind two worked-example / path-table defects;
   covered by a new `tests/test_lint.py`.
@@ -29,8 +39,8 @@ framework, not any individual clone (a clone records its own history in git).
   locally-edited framework file is preserved as `*.rp-new` instead of clobbered.
 - Consistency guard (`make docs-check`): required files, link + backtick-path
   resolution, section references, the two byte-identical mirror blocks, router
-  reachability, an evolution/maintenance log-count check, and a `DOCS_LANG_IS_ASCII`
-  -gated non-ASCII-letter check.
+  reachability, and an evolution/maintenance log-count check. Docs are
+  language-agnostic (Unicode) -- no character/script policy.
 - Optional subsystems (configurable): source mirror, Auto mode, generated
   `GETTING_STARTED.md` manual.
 - First-class documentation playbook with multi-domain worked examples.
@@ -44,9 +54,12 @@ framework, not any individual clone (a clone records its own history in git).
   explanation of what it sets, and the project root, task-artifacts folder, and
   project name are offered as a confirm-or-edit (accept the detected default with
   `yes`, or answer `no` to type your own).
-- The docs character-policy question (`DOCS_LANG_IS_ASCII`) is no longer asked;
-  `init` derives it from your docs language (e.g. Japanese → `no`). The guard
-  itself is unchanged — override the value in config if you ever need to.
+- The docs character/script policy (and its `DOCS_LANG_IS_ASCII` flag) is removed:
+  docs are language-agnostic (Unicode), so Greek math letters and any non-Latin
+  script are always allowed. A non-English `DOCS_LANG` now seeds a one-time
+  localization offer (a localization line in the first-session setup block of
+  `docs/entrypoint.md`, backed by a `prompt-factory` section 4.6 skeleton); the
+  skeleton still ships in English because the engine has no translation step.
 - `init` no longer asks for the experiment/record label nouns; they default to
   `Experiment` / `Note` (override `EXPERIMENT_UNIT_LABEL` / `ANALYSIS_RECORD_LABEL`
   in config if a project prefers other nouns).

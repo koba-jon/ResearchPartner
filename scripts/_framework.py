@@ -57,12 +57,9 @@ _INLINE_COND = re.compile(
 
 _TRUTHY = {"yes", "true", "1", "on"}
 
-# Languages whose docs are written in an ASCII-only script. Used only as the
-# default offered in init; the user confirms with an explicit yes/no.
-_ASCII_LANG_DEFAULT_NO = {
-    "japanese", "ja", "chinese", "zh", "korean", "ko", "russian", "ru",
-    "arabic", "ar", "hebrew", "he", "greek", "el", "thai", "th", "hindi", "hi",
-}
+# Docs-language names treated as English (the skeleton ships in English, so they
+# need no localization). Anything else triggers the one-time localization offer.
+_ENGLISH_DOCS_LANGS = {"english", "en", "en-us", "en-gb", "en_us", "en_gb", ""}
 
 
 class RenderError(Exception):
@@ -339,7 +336,6 @@ DEFAULT_CONFIG = {
     "USER_NAME": "",
     "CHAT_LANG": "English",
     "DOCS_LANG": "English",
-    "DOCS_LANG_IS_ASCII": "",  # blank -> derive() fills it from DOCS_LANG
     "CODE_LANG": "English",
     "PROJECT_ROOT": "",
     "FRAMEWORK_REPO_DIR": "",
@@ -349,7 +345,7 @@ DEFAULT_CONFIG = {
     "SRC_MIRROR_ENABLED": "no",
     "ENABLE_AUTO_MODE": "yes",         # Auto mode subsystem on by default (init no longer asks)
     "GENERATE_MANUAL": "yes",
-    "ENABLE_PUBLISH_STEP": "no",       # opt-in: adds a Publish closing step to prompt-factory (pairs with SRC_MIRROR_ENABLED)
+    "ENABLE_PUBLISH_STEP": "yes",      # on by default: prompt-factory ends prompts with a Publish (commit+push docs repo) AFTER the task's Verification; set "no" to keep commit/push manual
     "EXPERIMENT_UNIT_LABEL": "Experiment",
     "ANALYSIS_RECORD_LABEL": "Note",
     # Optional shell-var-name overrides; blank -> derived from PROJECT_NAME
@@ -380,8 +376,10 @@ def shell_ident(name):
     return cleaned
 
 
-def docs_lang_default_ascii(docs_lang):
-    return "no" if str(docs_lang).strip().lower() in _ASCII_LANG_DEFAULT_NO else "yes"
+def docs_lang_is_english(docs_lang):
+    """Whether DOCS_LANG is English ('yes'/'no'); non-English triggers the
+    one-time docs localization offer (the skeleton always ships in English)."""
+    return "yes" if str(docs_lang).strip().lower() in _ENGLISH_DOCS_LANGS else "no"
 
 
 def load_config(path):
@@ -417,7 +415,7 @@ def validate_config(cfg):
     if env and env not in _COMPUTE_ENVS:
         problems.append("COMPUTE_ENV must be one of %s" % sorted(_COMPUTE_ENVS))
     for key in ("SRC_MIRROR_ENABLED", "ENABLE_AUTO_MODE", "GENERATE_MANUAL",
-                "ENABLE_PUBLISH_STEP", "DOCS_LANG_IS_ASCII"):
+                "ENABLE_PUBLISH_STEP"):
         val = str(cfg.get(key, "")).strip().lower()
         if val and val not in _YESNO:
             problems.append("%s must be 'yes' or 'no'" % key)
@@ -446,8 +444,7 @@ def derive(cfg):
     ctx["PROJECT_VAR_BRACE"] = "${" + ctx["PROJECT_VAR"] + "}"
     ctx["REPO_VAR_BRACE"] = "${" + ctx["REPO_VAR"] + "}"
     ctx["COMPUTE_DRIVE_VAR_BRACE"] = "${" + ctx["COMPUTE_DRIVE_VAR"] + "}"
-    if not str(ctx.get("DOCS_LANG_IS_ASCII", "")).strip():
-        ctx["DOCS_LANG_IS_ASCII"] = docs_lang_default_ascii(ctx.get("DOCS_LANG", ""))
+    ctx["DOCS_LANG_IS_ENGLISH"] = docs_lang_is_english(ctx.get("DOCS_LANG", ""))
     return ctx
 
 
@@ -709,6 +706,7 @@ def known_token_names():
     names.update({
         "ROLE_TERM", "PROJECT_VAR", "REPO_VAR", "COMPUTE_DRIVE_VAR",
         "PROJECT_VAR_BRACE", "REPO_VAR_BRACE", "COMPUTE_DRIVE_VAR_BRACE",
+        "DOCS_LANG_IS_ENGLISH",
     })
     return names
 

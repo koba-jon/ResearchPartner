@@ -1,0 +1,25 @@
+# Experiment Mode Protocol
+
+Experiment (experiment mode) runs prepared code to produce results **and records them back into the docs** -- ingestion is the closing step of this mode, not a separate one. It is a mutating, compute-bearing Claude Code mode. Writing the source it runs is Implement mode (`docs/operations/implement-mode.md`).
+
+## 1. Trigger
+
+"Run it", "train / evaluate", "record the result", "ingest this result file".
+
+## 2. Run Discipline
+
+Do not change source during a run (that is a separate Implement task). Write outputs to a **new** directory distinct from prior {{EXPERIMENT_UNIT_LABEL}} outputs; never overwrite existing results. Judge each locked success criterion (from `docs/project/project-status.md`) mechanically against its threshold.
+
+## 3. The Prompt
+
+Build the run prompt from the **Experiment skeleton in `docs/operations/prompt-factory.md` section 4.2**, or the Result-Ingestion skeleton (section 4.4) when a result lands without a fresh run.
+
+## 4. Closing Step: Record
+
+Recording is mandatory and is what makes Experiment distinct from "just running": numbers to `docs/evaluation/comparison.md`; verdict + next task to `docs/project/project-status.md`; a row to `docs/project/themes/theme-index.md` and a body to `docs/project/themes/theme-bodies.md`; lever state to `docs/method/algorithmic-levers.md`. Then run `make docs-check`.
+
+## 5. Forbidden
+
+- Editing source mid-run.
+- Overwriting prior results or checkpoints.
+- Presenting a cross-tier comparison as final evidence, or a test-label oracle as deployable performance.

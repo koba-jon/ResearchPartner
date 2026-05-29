@@ -55,6 +55,13 @@ class MatrixCase(unittest.TestCase):
         self.assertFalse(os.path.exists(os.path.join(clone, "GETTING_STARTED.md")))
         pf = u.read(os.path.join(clone, "docs", "operations", "prompt-factory.md"))
         self.assertNotIn("Publish (optional closing step)", pf)
+        # First-session setup: data bootstrap is always offered; localization is not
+        # (this is an English clone).
+        ep = u.read(os.path.join(clone, "docs", "entrypoint.md"))
+        self.assertIn("First-session setup", ep)
+        self.assertNotIn("Localize the docs", ep)
+        self.assertIn("4.7 Project Bootstrap", pf)
+        self.assertNotIn("4.6 Docs Localization", pf)
 
     def test_all_on(self):
         clone = self._render("all", SRC_MIRROR_ENABLED="yes", ENABLE_AUTO_MODE="yes",
@@ -66,6 +73,16 @@ class MatrixCase(unittest.TestCase):
         self.assertTrue(os.path.exists(os.path.join(clone, "GETTING_STARTED.md")))
         pf = u.read(os.path.join(clone, "docs", "operations", "prompt-factory.md"))
         self.assertIn("Publish (optional closing step)", pf)
+
+    def test_localization_render(self):
+        # A non-English clone gets both first-session offers and both recipes.
+        clone = self._render("ja", DOCS_LANG="Japanese")
+        ep = u.read(os.path.join(clone, "docs", "entrypoint.md"))
+        self.assertIn("First-session setup", ep)
+        self.assertIn("Localize the docs", ep)
+        pf = u.read(os.path.join(clone, "docs", "operations", "prompt-factory.md"))
+        self.assertIn("4.6 Docs Localization", pf)
+        self.assertIn("4.7 Project Bootstrap", pf)
 
 
 if __name__ == "__main__":

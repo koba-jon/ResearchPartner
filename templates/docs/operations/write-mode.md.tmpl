@@ -1,0 +1,27 @@
+# Write Mode Protocol
+
+Write (write mode) produces prose: README, technical report, or paper sections. It mutates **docs only** and is usually done in Chat. The numbers it cites come from the project's recorded results -- Write never generates new ones.
+
+## 1. Trigger
+
+"Draft the README / report / paper section", "write up these results", "tighten this positioning".
+
+## 2. Source-Of-Truth Discipline
+
+Every numeric claim traces to `docs/evaluation/comparison.md`; every verdict uses the vocabulary in `docs/evaluation/evaluation-and-visualization.md`. Do not invent, round up, or restate a number from memory -- cite the recorded source. Follow `docs/writing/paper-writing-guide.md` and `docs/writing/related-work-and-positioning.md`.
+
+## 3. Output
+
+The prose under `docs/writing/` (or the target report). Keep claims proportional to the evidence: an inconclusive result is not written as a win.
+
+## 4. Discipline
+
+- Lead with the conclusion; state the claim, the evidence, and the limitation together.
+- When a result is needed but not yet recorded, stop and route to Experiment or Analyze -- do not fill the gap with a guess.
+- After edits, cascade per `docs/operations/consistency-guard.md` and run `make docs-check`.
+
+## 5. Forbidden
+
+- Numeric claims not backed by `docs/evaluation/comparison.md`.
+- Overstating a verdict beyond what the recorded evidence supports.
+- Editing result tables to fit the prose (the prose follows the data, not the reverse).

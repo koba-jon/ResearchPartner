@@ -9,6 +9,8 @@ This file stores the highest-priority open issues and the next {{EXPERIMENT_UNIT
 The most pressing unresolved problems, most important first. None recorded yet; the item below is a marked example to seed the list as the project starts.
 
 - (example) Establish a reproducible baseline run so later {{EXPERIMENT_UNIT_LABEL}} results have something to compare against.
+- (onboarding) If prior results, data, or writeups exist, bootstrap these docs from them via a read-only Claude Code ingest (`docs/operations/prompt-factory.md` section 4.7); then remove this item and the entrypoint "First-session setup" block.
+<!-- if:DOCS_LANG_IS_ENGLISH=no -->- (onboarding) Localize the English docs skeleton into {{DOCS_LANG}} (prose only; keep code, paths, commands, mirror blocks, and `section N` refs verbatim), then run `make docs-check`. See `docs/operations/prompt-factory.md` section 4.6.<!-- endif -->
 
 ## 2. Next {{EXPERIMENT_UNIT_LABEL}} Candidates
 

@@ -1,0 +1,29 @@
+# Investigate Mode Protocol
+
+Investigate (investigate mode) gathers **external or not-yet-internalized** knowledge: literature, prior work, methods, web search, and first reads of the current codebase. Reasoning over the project's **own** results is Analyze mode (`docs/operations/analysis-mode.md`); proposing what to try next is Design mode (`docs/operations/design-mode.md`).
+
+## 1. Trigger
+
+"What does prior work do", "find a paper / method", "search the web", "how does this part of the code work" (when you have not yet internalized it). Recall you are already confident about is plain Q&A, not a mode.
+
+## 2. Read-Only Principle
+
+Investigate never changes tracked files. Notes, excerpts, and probes go under `${CLAUDE_DIR}/{TASK_ID}/`. It is the one mode that reaches **outside** the project (web, papers), so weigh source quality explicitly.
+
+`TASK_ID` format: `YYYYMMDD-HHMM-INVESTIGATE-{topic}`, timestamp from a real `date` call. See `docs/operations/directory-map.md`.
+
+## 3. Output
+
+A findings note that keeps **fact separate from inference** and **cites every external source** (title + link or path). For codebase reads, cite the file and lines you actually opened with `rg` / view -- never describe code from memory.
+
+## 4. Discipline
+
+- State the question first, then what you searched and why it is sufficient.
+- Prefer primary sources; mark anything unverified as such.
+- Land durable findings in their home: external positioning in `docs/writing/related-work-and-positioning.md`, terms in `docs/concepts/glossary.md`; method ideas feed Design.
+
+## 5. Forbidden
+
+- Presenting an unverified external claim as established fact.
+- Reconstructing code, path, or numeric facts from memory instead of reading them.
+- Editing tracked files (Investigate is read-only).

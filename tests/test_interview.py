@@ -2,7 +2,7 @@
 
 The non-interactive config path skips interview(), so these run the real script
 with `--print-config` and piped stdin — the only coverage of the interview's
-auto-derivation (src/ -> mirror, docs language -> ASCII) and confirm-or-edit flow.
+auto-derivation (src/ -> mirror, docs language -> localization flag) and confirm-or-edit flow.
 """
 
 import json
@@ -70,14 +70,16 @@ class InterviewCase(unittest.TestCase):
         self.assertEqual(r.returncode, 0, r.stderr)
         self.assertEqual(cfg["SRC_MIRROR_ENABLED"], "no")
 
-    def test_ascii_derived_from_docs_lang(self):
-        """DOCS_LANG_IS_ASCII is no longer asked; it is derived from the docs
-        language (Japanese -> no)."""
+    def test_docs_lang_english_flag_derived(self):
+        """DOCS_LANG drives the derived DOCS_LANG_IS_ENGLISH flag (Japanese ->
+        no), which gates the one-time localization offer. The removed
+        DOCS_LANG_IS_ASCII flag is gone."""
         proj = self._proj("jp", py=True)
         cfg, r = run_interview(self._head(proj) + ["yes", "Tester", "", "Japanese", ""])
         self.assertEqual(r.returncode, 0, r.stderr)
         self.assertEqual(cfg["DOCS_LANG"], "Japanese")
-        self.assertEqual(cfg["DOCS_LANG_IS_ASCII"], "no")
+        self.assertEqual(cfg["DOCS_LANG_IS_ENGLISH"], "no")
+        self.assertNotIn("DOCS_LANG_IS_ASCII", cfg)
 
     def test_confirm_or_edit_overrides_project_name(self):
         """Answering 'no' to the project-name confirm collects a typed value."""

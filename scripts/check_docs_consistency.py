@@ -7,8 +7,8 @@ ResearchPartner template:
   * required-files / router lists match the (collapsed) ResearchPartner file
     set and are filtered through the ownership manifest, so a clone with a
     subsystem turned off is not flagged for an intentionally-absent file;
-  * the character-policy check is gated on DOCS_LANG_IS_ASCII (read from the
-    instance config), so a non-ASCII-docs clone is not flagged for its script;
+  * docs are language-agnostic (Unicode): there is no character/script policy,
+    so Greek math letters and any non-Latin script are allowed;
   * the two byte-identical mirror checks and the section-reference logic are
     ported 1:1 from the Ruby oracle.
 
@@ -21,7 +21,6 @@ import argparse
 import os
 import re
 import sys
-import unicodedata
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import _framework as fw  # noqa: E402
@@ -78,7 +77,6 @@ class Guard:
         self.root = os.path.abspath(root)
         self.docs = os.path.join(self.root, "docs")
         self.cfg = cfg
-        self.docs_ascii = str(cfg.get("DOCS_LANG_IS_ASCII", "yes")).lower() != "no"
         self.check_legacy = check_legacy_numbered
         self.errors = []
         self._section_cache = {}
@@ -185,19 +183,11 @@ class Guard:
                 if not os.path.isfile(self._abs(ref)):
                     self.fail("%s: backtick reference to missing doc `%s`" % (rel, ref))
 
-            # 2. character policy (gated on DOCS_LANG_IS_ASCII): flag non-ASCII
-            # LETTERS (CJK, Hangul, Cyrillic, Greek, Arabic, ...) which signal
-            # accidental non-English prose. Latin-accented names (Jose) use
-            # codepoints <= U+024F and are intentionally NOT flagged; punctuation
-            # (section sign, em dash, ...) is not a letter and is allowed.
-            if self.docs_ascii:
-                bad = sorted({c for c in text
-                              if ord(c) > 0x24F and unicodedata.category(c).startswith("L")})
-                if bad:
-                    self.fail("%s: contains non-ASCII letters (%s) but DOCS_LANG_IS_ASCII=yes"
-                              % (rel, " ".join(bad[:5])))
+            # NOTE: docs are language-agnostic (Unicode). There is intentionally
+            # no character/script policy here -- Greek math letters and any
+            # non-Latin script are valid docs content.
 
-            # 3. forbidden / legacy paths
+            # 2. forbidden / legacy paths
             if re.search(r"docs/docs/", text):
                 self.fail("%s: contains duplicated docs path" % rel)
             if self.check_legacy:
@@ -210,7 +200,7 @@ class Guard:
                     if re.search(pat, text):
                         self.fail("%s: contains %s" % (rel, label))
 
-            # 4. section references (cross-file then local, skipping overlaps)
+            # 3. section references (cross-file then local, skipping overlaps)
             path_ranges = []
             for m in PATH_SECTION_REF.finditer(text):
                 path_ranges.append((m.start(), m.end()))
