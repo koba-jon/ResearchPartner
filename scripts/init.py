@@ -69,53 +69,116 @@ def ask_name(prompt, default=""):
         fw.warn("  use letters/digits/space and . _ - (1-60 chars).")
 
 
+def ask_path(prompt):
+    """Loop until a non-empty path is given; return it as an absolute path."""
+    while True:
+        v = ask(prompt)
+        if v:
+            return os.path.abspath(v)
+        fw.warn("  please enter a path.")
+
+
+def ask_confirm_or_edit(label, explanation, default, edit_fn, default_ok=None):
+    """Offer a computed default; accept it (yes) or replace it (no -> edit_fn()).
+
+    Prints a labelled, explained prompt, shows the proposed value, and asks yes/no.
+    'yes' keeps the proposal; 'no' hands off to edit_fn() to gather a replacement.
+    If default_ok rejects the proposal we skip the offer and go straight to edit_fn,
+    so we never accept a value the edit path itself would reject.
+    """
+    print("\n%s" % label)
+    print("  %s" % explanation)
+    if default and (default_ok is None or default_ok(default)):
+        if ask_yesno('  Use "%s"?' % default, "yes") == "yes":
+            return default
+    else:
+        fw.warn("  no usable default detected; please enter a value.")
+    return edit_fn()
+
+
 def interview(root):
     cfg = dict(fw.DEFAULT_CONFIG)
-    print("\n== Phase 0: working location & compute ==")
+    print("\nLet's configure your ResearchPartner clone.")
+    print("  - Press Enter to accept the default shown in [brackets].")
+    print("  - For a detected value, answer 'yes' to keep it or 'no' to type your own.")
+    print("\n== Phase 1: where your project lives and where it runs ==")
     default_root = os.path.dirname(root)  # clone usually sits inside PROJECT_ROOT
-    cfg["PROJECT_ROOT"] = os.path.abspath(ask("Project root (your workspace)", default_root))
+    cfg["PROJECT_ROOT"] = ask_confirm_or_edit(
+        "Project root",
+        "The top-level folder of your workspace, where your code and data live "
+        "(this clone usually sits inside it). Normally the folder shown below.",
+        os.path.abspath(default_root),
+        lambda: ask_path("  Enter the project root path to use instead"))
     cfg["FRAMEWORK_REPO_DIR"] = root
-    cfg["CLAUDE_DIR"] = os.path.abspath(
-        ask("Claude Code task-artifacts dir", os.path.join(cfg["PROJECT_ROOT"], "claude")))
+    cfg["CLAUDE_DIR"] = ask_confirm_or_edit(
+        "Claude task-artifacts folder",
+        "The folder where Claude Code saves its working files — task notes and "
+        "intermediate outputs. A 'claude' sub-folder of the project root is usual.",
+        os.path.abspath(os.path.join(cfg["PROJECT_ROOT"], "claude")),
+        lambda: ask_path("  Enter the task-artifacts folder path to use instead"))
+
+    print("\n  Compute environment: where you actually run experiments — this sets")
+    print("  the path and runtime hints in your docs.")
     cfg["COMPUTE_ENV"] = ask_choice(
         "Compute environment", ["colab", "local-gpu", "local-cpu", "other"], "local-cpu")
     if cfg["COMPUTE_ENV"] == "colab":
+        print("  Colab mounts your Google Drive; give the Drive path this project lives under.")
         cfg["COMPUTE_DRIVE"] = ask("Colab Drive root for this project",
                                    "/content/drive/MyDrive")
 
-    print("\n== Phase 1: detect & ingest (read-only) ==")
+    print("\n== Phase 2: detect & ingest (read-only scan of your project) ==")
     scan = fw.scan_project(cfg["PROJECT_ROOT"], self_dir=root)
     print(scan["summary"])
     print(scan["tree"])
     cfg["INGEST_SUMMARY"] = scan["summary"]
     cfg["INGEST_TREE"] = scan["tree"]
 
-    if not scan["has_code"]:
-        print("\n== Phase 1b: intent interview (no code detected) ==")
-        cfg["INTENT_DOMAIN"] = ask("Research domain / field")
-        cfg["INTENT_STACK"] = ask("Main tools / stack")
-        cfg["INTENT_GOAL"] = ask("One-line goal of the project")
-        cfg["INTENT_FIRST_STEP"] = ask("First planned step")
+    # Source mirror: auto-enabled when there is a PROJECT_ROOT/src to mirror. sync_src
+    # mirrors that path specifically, so gating on has_code would mis-fire for code in
+    # notebooks at the root or under lib/. No longer asked; set SRC_MIRROR_ENABLED=no
+    # in config to keep your source out of this repo.
+    cfg["SRC_MIRROR_ENABLED"] = "yes" if os.path.isdir(
+        os.path.join(cfg["PROJECT_ROOT"], "src")) else "no"
+    if cfg["SRC_MIRROR_ENABLED"] == "yes":
+        print("\n  Found a src/ directory — your source will be mirrored (read-only) into")
+        print("  this repo's src/ so the Claude Project can read it; refresh with `make sync-src`.")
 
-    print("\n== Phase 2: identity ==")
-    cfg["PROJECT_NAME"] = ask_name("Project name", os.path.basename(cfg["PROJECT_ROOT"]))
-    cfg["USER_NAME"] = ask_clean("Your name (the human collaborator)")
+    if not scan["has_code"]:
+        print("\n== Phase 2b: intent interview (no code found — tell me the plan) ==")
+        print("  No source code was detected, so a few words about the plan let your docs")
+        print("  start from something real instead of placeholders.")
+        cfg["INTENT_DOMAIN"] = ask("Research domain / field (e.g. NLP, genomics)")
+        cfg["INTENT_STACK"] = ask("Main tools / stack (e.g. PyTorch, JAX, R)")
+        cfg["INTENT_GOAL"] = ask("One-line goal of the project")
+        cfg["INTENT_FIRST_STEP"] = ask("First concrete step you plan to take")
+
+    print("\n== Phase 3: identity & languages ==")
+    cfg["PROJECT_NAME"] = ask_confirm_or_edit(
+        "Project name",
+        "The display name used across your docs and the Claude project instructions.",
+        os.path.basename(cfg["PROJECT_ROOT"]),
+        lambda: ask_name("  Enter the project name to use instead"),
+        default_ok=lambda d: bool(_NAME_RE.match(d)))
+
+    print("\n  Your name as it should appear in the docs (the human collaborator).")
+    cfg["USER_NAME"] = ask_clean("Your name")
+
+    print("\n  The next three languages can differ:")
+    print("    - Chat: how Claude replies to you in conversation.")
+    print("    - Docs: the language your generated docs are written in.")
+    print("    - Code: the language for code comments and prompts.")
     cfg["CHAT_LANG"] = ask_clean("Chat reply language", "English")
     cfg["DOCS_LANG"] = ask_clean("Docs language", "English")
-    cfg["DOCS_LANG_IS_ASCII"] = ask_yesno(
-        "Are docs written only in ASCII letters (no CJK/Cyrillic/etc.)?",
-        fw.docs_lang_default_ascii(cfg["DOCS_LANG"]))
     cfg["CODE_LANG"] = ask_clean("Code / prompt language", "English")
-
-    print("\n== Phase 3: options ==")
-    cfg["GENERATE_MANUAL"] = ask_yesno("Generate a GETTING_STARTED manual?", "yes")
-    cfg["SRC_MIRROR_ENABLED"] = ask_yesno(
-        "Mirror your source code into this repo's src/?",
-        "yes" if scan["has_code"] else "no")
-    cfg["EXPERIMENT_UNIT_LABEL"] = ask_clean("Label for one tracked experiment", "Experiment")
-    cfg["ANALYSIS_RECORD_LABEL"] = ask_clean("Label for one recorded analysis/finding", "Note")
-    cfg["ENABLE_AUTO_MODE"] = ask_yesno(
-        "Enable Auto mode (autonomous orchestration of the other modes)?", "no")
+    cfg["DOCS_LANG_IS_ASCII"] = fw.docs_lang_default_ascii(cfg["DOCS_LANG"])
+    # The following are no longer asked; they take their DEFAULT_CONFIG values and can
+    # be changed in config followed by `make update`:
+    #   DOCS_LANG_IS_ASCII   - derived just above from DOCS_LANG (non-ASCII docs, e.g.
+    #                          Japanese -> "no"); gates the docs character-policy guard.
+    #   GENERATE_MANUAL ("yes")  - generate the GETTING_STARTED manual.
+    #   ENABLE_AUTO_MODE ("yes") - include the Auto mode subsystem.
+    #   EXPERIMENT_UNIT_LABEL ("Experiment") / ANALYSIS_RECORD_LABEL ("Note").
+    #   SRC_MIRROR_ENABLED   - auto-set earlier from whether PROJECT_ROOT/src exists.
     return cfg
 
 

@@ -19,9 +19,9 @@
   "COMPUTE_ENV": "local-gpu",
   "COMPUTE_DRIVE": "",
 
-  "_subsystems": "Toggle the optional subsystems.",
+  "_subsystems": "Toggle the optional subsystems. init no longer asks any of these: SRC_MIRROR_ENABLED is auto-enabled when PROJECT_ROOT/src exists; GENERATE_MANUAL and ENABLE_AUTO_MODE default to 'yes'.",
   "SRC_MIRROR_ENABLED": "yes",
-  "ENABLE_AUTO_MODE": "no",
+  "ENABLE_AUTO_MODE": "yes",
   "GENERATE_MANUAL": "yes",
 
   "_vocabulary": "User-facing labels. GSAD used Wave / Theme.",

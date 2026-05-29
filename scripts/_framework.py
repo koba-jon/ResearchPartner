@@ -347,7 +347,7 @@ DEFAULT_CONFIG = {
     "COMPUTE_ENV": "local-cpu",        # colab | local-gpu | local-cpu | other
     "COMPUTE_DRIVE": "",
     "SRC_MIRROR_ENABLED": "no",
-    "ENABLE_AUTO_MODE": "no",
+    "ENABLE_AUTO_MODE": "yes",         # Auto mode subsystem on by default (init no longer asks)
     "GENERATE_MANUAL": "yes",
     "EXPERIMENT_UNIT_LABEL": "Experiment",
     "ANALYSIS_RECORD_LABEL": "Note",
