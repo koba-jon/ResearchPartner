@@ -20,7 +20,7 @@ In analysis mode, all existing files are READ-ONLY, including source, datasets, 
 
 Copies and probes go under `${CLAUDE_DIR}/{TASK_ID}/workspace/`. Deliverables go under `${CLAUDE_DIR}/{TASK_ID}/outputs/`. Write only inside `${CLAUDE_DIR}/{TASK_ID}/`.
 
-`TASK_ID` format: `YYYYMMDD-HHMM-ANALYZE-{topic}`, where the timestamp is resolved with a real `date` call at generation time. See `docs/operations/directory-map.md`.
+Default `TASK_ID` label: `ANALYZE` (timestamp resolved with a real `date` call at generation time). See `docs/operations/directory-map.md` section 4.
 
 ## 3. Executor Routing
 

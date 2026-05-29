@@ -55,3 +55,16 @@ ${CLAUDE_DIR}/{TASK_ID}/
 - The `YYYYMMDD-HHMM` segment must be the real `date` value taken by the Claude Code run that generates the prompt or the runner, not a placeholder.
 - The {{ROLE_TERM}} drafting a prompt chooses only the `LABEL-suffix` portion (such as `ANALYZE-result-sweep` or `IMPL-loss-patch`); the timestamp is owned by the executor and resolved with `date` at generation time.
 - Do not insert an `XXXX` placeholder, a template tag, or a runtime `now()` expression in place of the timestamp; that loses the audit chain between the task report, the task directory, and the produced artifacts.
+
+Conventional `LABEL` per operating mode (this table is the single source of truth for the labels; use a more specific suffix when it helps, e.g. `IMPL-loss-patch`). Modes are defined in `docs/operations/operation-modes.md`.
+
+| Mode | LABEL |
+|---|---|
+| Investigate | `INVESTIGATE` |
+| Design | `DESIGN` |
+| Implement | `IMPL` |
+| Experiment | `EXPERIMENT` |
+| Analyze | `ANALYZE` |
+| Write | `WRITE` |
+| Auto | `AUTO` |
+| Maintain | `MAINTAIN` |
