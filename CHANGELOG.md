@@ -61,4 +61,23 @@ framework, not any individual clone (a clone records its own history in git).
   setup, and a maintainers section. `SETUP.md` was removed and its unique content
   folded into `README.md`.
 
+### Fixed
+- `docs/project/project-status.md` referenced the wrong file for the verdict
+  vocabulary; corrected to `docs/evaluation/evaluation-and-visualization.md`
+  section 2.
+- `init --dry-run` no longer performs `git remote rename` under
+  `--adopt-base-as-upstream`; a dry run now writes nothing.
+- `load_manifest` raises a clean error on a malformed `ownership.json` instead
+  of a raw traceback (it runs in the pre-commit hook).
+- The consistency guard no longer flags a titled markdown link
+  `[x](f.md "title")` as a missing target.
+- Free-text intake fields (`INTENT_*`, `INGEST_SUMMARY`) containing a literal
+  `{{...}}` no longer abort the whole render.
+- An all-non-ASCII project name now yields a stable, distinct shell-variable
+  stem (was a fixed `PROJECT` that collided across names), and interactive `init`
+  accepts non-ASCII `PROJECT_NAME` display names instead of re-prompting forever.
+- `forbidden-actions` now references `algorithmic-levers` section 3 (rejected
+  approaches), resolving a dangling cross-reference; the Publish step no longer
+  assumes the source mirror; dropped the unused `INGEST_TREE` token.
+
 [Unreleased]: https://github.com/koba-jon/ResearchPartner/commits/main
