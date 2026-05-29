@@ -71,7 +71,7 @@ cd /path/to/<PROJECT_ROOT>/<your-repo-name>
 ### 3. Configure (interactive)
 
 ```bash
-python3 scripts/init.py        # or: make init   (add --adopt-base-as-upstream if you skipped the rename)
+python3 scripts/init.py
 ```
 
 It interviews you in a few short phases and then renders your configured instance:
