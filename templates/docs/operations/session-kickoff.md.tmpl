@@ -98,6 +98,6 @@ When {{USER_NAME}} asks how long something will take or gives a budget: read `do
 
 ## 3. Pre-Prompt Checklist
 
-When a task produces a Claude Code prompt, copy the canonical path-variable header from `docs/entrypoint.md` section 0 (templates in `docs/operations/prompt-factory.md`). Confirm: the edit scope is stated with read-only files named; paths are in brace form such as `{{PROJECT_VAR_BRACE}}/src/`; tokens/paths/numbers were verified with rg or view, not memory; no git commit or push against `{{PROJECT_VAR_BRACE}}`; the smoke check matches current files; and there is a concrete verification step.
+When a task produces a Claude Code prompt, copy the canonical path-variable header from `docs/entrypoint.md` section 0 (templates in `docs/operations/prompt-factory.md`). Confirm: the edit scope is stated with read-only files named; paths are in brace form such as `{{PROJECT_VAR_BRACE}}/src/`; tokens/paths/numbers were verified with rg or view, not memory; no git commit or push against `{{PROJECT_VAR_BRACE}}`; the smoke check matches current files; and there is a concrete verification step<!-- if:ENABLE_PUBLISH_STEP=yes -->; and, when the task lands changes in the repo, the prompt ends with the Publish step (commit + push the docs repo) defined in `docs/operations/prompt-factory.md`<!-- endif -->.
 
 Time-estimate note: separate LLM-bound estimates (Claude Code work over local files, dominated by token generation) from compute-bound estimates (training and long runs, dominated by hardware). See `docs/operations/time-estimation.md`.

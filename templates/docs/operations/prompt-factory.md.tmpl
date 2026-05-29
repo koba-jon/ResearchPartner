@@ -1,6 +1,6 @@
 # Prompt Factory
 
-Patterns for writing Claude Code / Codex prompts for {{PROJECT_NAME}}. A prompt is a **contract**, not a wish: it names the paths, the single change, what may and may not be edited, and how the result will be checked. A vague prompt produces vague work; the cost of precision here is repaid many times over in the result.
+Patterns for writing Claude Code prompts for {{PROJECT_NAME}}. A prompt is a **contract**, not a wish: it names the paths, the single change, what may and may not be edited, and how the result will be checked. A vague prompt produces vague work; the cost of precision here is repaid many times over in the result.
 
 ## 1. Pre-Prompt Checklist
 
@@ -14,7 +14,7 @@ Patterns for writing Claude Code / Codex prompts for {{PROJECT_NAME}}. A prompt 
 
 ## 2. Canonical Header
 
-Define these at the top of every Claude Code / Codex prompt, then use brace-form paths afterward. This block is mirrored byte-identically in `docs/entrypoint.md` section 0; the consistency guard enforces it.
+Define these at the top of every Claude Code prompt, then use brace-form paths afterward. This block is mirrored byte-identically in `docs/entrypoint.md` section 0; the consistency guard enforces it.
 
 ```bash
 <!-- include: _fragments/canonical-header.txt -->
@@ -33,6 +33,7 @@ Edit scope: <files that may change>. Read-only: <files that must not change>.
 Constraints: <relevant OCs by id>.
 Deliverable: <what to produce, and where under ${CLAUDE_DIR}/{TASK_ID}/>.
 Verification: <command to run / output to inspect / criterion to meet>.
+<!-- if:ENABLE_PUBLISH_STEP=yes -->Publish: after Verification passes, commit + push the docs repo (see the Publish section).<!-- endif -->
 ```
 
 `TASK_ID` is `YYYYMMDD-HHMM-XXXX`, with the timestamp resolved by a real `date` call at generation time (never a placeholder), so the audit chain holds. See `docs/operations/directory-map.md`.
@@ -66,7 +67,7 @@ Read-only: all source and prior results.
 Deliverable: the result files + the metrics, under ${CLAUDE_DIR}/{TASK_ID}/outputs/.
 Verification: each locked criterion judged mechanically against its threshold.
 ```
-Recording the result into the docs is the closing step of Experiment mode (see `docs/operations/session-kickoff.md`): numbers to `docs/evaluation/comparison.md`, verdict + next task to `docs/project/project-status.md`, a row to `docs/project/themes/theme-index.md` and a body to `docs/project/themes/theme-bodies.md`, lever state to `docs/method/algorithmic-levers.md`; then `make docs-check`.
+Recording the result into the docs is the closing step of Experiment mode (see `docs/operations/session-kickoff.md`): numbers to `docs/evaluation/comparison.md`, verdict + next task to `docs/project/project-status.md`, a row to `docs/project/themes/theme-index.md` and a body to `docs/project/themes/theme-bodies.md`, lever state to `docs/method/algorithmic-levers.md`; then `make docs-check`<!-- if:ENABLE_PUBLISH_STEP=yes -->, and Publish (commit + push the docs repo; see the Publish section)<!-- endif -->.
 
 ### 4.3 Analyze
 
@@ -87,6 +88,7 @@ Ingest the result at <path>. Do not re-run the experiment. Update, in order:
 docs/evaluation/comparison.md (numbers), docs/project/project-status.md (verdict, next task),
 docs/project/themes/theme-index.md (+ body in theme-bodies.md), docs/method/algorithmic-levers.md
 (lever state). Then run make docs-check.
+<!-- if:ENABLE_PUBLISH_STEP=yes -->Then Publish: commit + push the docs repo (see the Publish section).<!-- endif -->
 ```
 
 ### 4.5 Docs Update
@@ -96,6 +98,7 @@ docs/project/themes/theme-index.md (+ body in theme-bodies.md), docs/method/algo
 Change class: <from docs/operations/consistency-guard.md>.
 Edit first: <file>. Cascade: <files from entrypoint section 5>.
 Run make docs-check from the docs repo and report the result before finishing.
+<!-- if:ENABLE_PUBLISH_STEP=yes -->Then Publish: commit + push the docs repo so the doc updates land upstream (see the Publish section).<!-- endif -->
 ```
 
 ## 5. A Worked Example (illustrative)
@@ -107,7 +110,7 @@ A filled-in Implement prompt for a generic "add a gated alternative objective" c
 Context: implement an alternative training objective for {{EXPERIMENT_UNIT_LABEL}} 7.
 Task: add a function `alt_objective(...)` and a flag `--objective={default,alt}` (default
   `default`). With `default`, behavior is bit-identical to today.
-Edit scope: ${PROJECT_VAR_BRACE}/src/objective.py, ${PROJECT_VAR_BRACE}/src/options.py.
+Edit scope: {{PROJECT_VAR_BRACE}}/src/objective.py, {{PROJECT_VAR_BRACE}}/src/options.py.
   Read-only: everything else.
 Constraints: OC-2, OC-5, OC-7. Subtract-first: reuse the existing loss plumbing, add no new module.
 Deliverable: the patch + a note confirming the default path is unchanged.
@@ -139,4 +142,25 @@ Tiers: <smoke / quick / full ladder>. Fair comparison: same data subset, seed, b
 Log every run to results.jsonl with id, config, metrics, decision (keep/discard/promote).
 Stop conditions: <budget or no-improvement rule>. See docs/operations/auto-mode.md.
 ```
+<!-- endif -->
+<!-- if:ENABLE_PUBLISH_STEP=yes -->
+## Publish (optional closing step)
+
+This step is opt-in (config `ENABLE_PUBLISH_STEP=yes`). It applies to any task whose result should land in the git docs repo: a documentation edit, a recorded result, or a refreshed `src/` mirror. Append a `Publish:` line to the prompt so the executor commits and pushes *after Verification passes*. It stages the repo's tracked content, so it captures both your documentation edits and the `src/` mirror in one commit:
+
+```text
+Publish: once Verification passes, publish to the git docs repo:
+  cd {{REPO_VAR_BRACE}} \
+    && make docs-check && make sync-src \
+    && git add -A -- . ':(exclude)*.rp-new' \
+    && (git diff --cached --quiet || git commit -m "<TASK_ID>: <one-line summary>") \
+    && git push origin HEAD
+```
+
+- Push only the docs repo {{REPO_VAR_BRACE}}. Never commit or push the workspace {{PROJECT_VAR_BRACE}}; it is a non-git local master.
+- Guard first: `make docs-check` aborts the publish on failure (the `&&` chain stops) and is never bypassed.
+- `make sync-src` refreshes the read-only `src/` mirror from {{PROJECT_VAR_BRACE}}/src (a no-op unless the source mirror is enabled).
+- The `:(exclude)*.rp-new` pathspec keeps unreviewed `*.rp-new` merge artifacts out of the commit, and the commit runs only when something is staged ("nothing to commit" is normal, not a failure).
+- `git push origin HEAD` needs `origin` with an upstream -- init creates neither, so push once with `git push -u origin <branch>` first. Report any push failure (auth, conflict, no upstream); do not swallow it.
+- After the push, refresh the Claude Project's connected source so the {{ROLE_TERM}} reads the new commit -- Chat serves a snapshot, and a push alone does not update it. Remind {{USER_NAME}} of this in the prompt's result note.
 <!-- endif -->

@@ -6,17 +6,17 @@ Documentation language policy:
 
 - All files under `docs/` are written in {{DOCS_LANG}}.
 - Claude Chat replies to {{USER_NAME}} are written in {{CHAT_LANG}}, unless {{USER_NAME}} explicitly asks otherwise.
-- Claude Code / Codex prompts may be written in {{CODE_LANG}}, but they must preserve the path and operational constraints below.
+- Claude Code prompts may be written in {{CODE_LANG}}, but they must preserve the path and operational constraints below.
 
 ## 0. Canonical Path Variables
 
-This table is the single source of truth for project paths. Claude Code / Codex prompts must define these variables at the top and then refer to paths in brace form such as `{{REPO_VAR_BRACE}}/src/`.
+This table is the single source of truth for project paths. Claude Code prompts must define these variables at the top and then refer to paths in brace form such as `{{REPO_VAR_BRACE}}/src/`.
 
 | Variable | Value | Purpose |
 |---|---|---|
 | `{{PROJECT_VAR}}` | `{{PROJECT_ROOT}}` | Local master for the main {{PROJECT_NAME}} workspace.<!-- if:SRC_MIRROR_ENABLED=yes --> It is not a git repo.<!-- endif --> It contains source, data, results, `claude/`, and this docs repo. |
 | `{{REPO_VAR}}` | `{{FRAMEWORK_REPO_DIR}}` | Git repo for the common docs<!-- if:SRC_MIRROR_ENABLED=yes --> and the `src/` mirror<!-- endif -->. |
-| `CLAUDE_DIR` | `{{CLAUDE_DIR}}` | Task artifacts produced by Claude Code / Codex. |
+| `CLAUDE_DIR` | `{{CLAUDE_DIR}}` | Task artifacts produced by Claude Code. |
 <!-- if:COMPUTE_ENV=colab -->| `{{COMPUTE_DRIVE_VAR}}` | `{{COMPUTE_DRIVE}}` | {{PROJECT_NAME}} root on Colab Drive (transient). |<!-- endif -->
 
 Canonical prompt header:
@@ -44,7 +44,7 @@ Path-writing rules:
 6. When answering {{USER_NAME}}, lead with a concise 1-3 line conclusion in {{CHAT_LANG}}.
 7. Define technical terms briefly on first use; use `docs/concepts/glossary.md` if terminology is uncertain.
 
-This framework does not use Project Memory; the docs tree under `docs/` is the single source of truth, gated by `make docs-check`. When generating a Claude Code / Codex prompt, re-check section 0 and `docs/operations/rules/operational-constraints.md`. Do not reconstruct path values, operational-constraint wording, or current code tokens from chat-recalled memory; verify against current files with rg / view.
+This framework does not use Project Memory; the docs tree under `docs/` is the single source of truth, gated by `make docs-check`. When generating a Claude Code prompt, re-check section 0 and `docs/operations/rules/operational-constraints.md`. Do not reconstruct path values, operational-constraint wording, or current code tokens from chat-recalled memory; verify against current files with rg / view.
 
 ## 2. Current Fast Summary
 

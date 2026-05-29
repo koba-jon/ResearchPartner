@@ -2,15 +2,15 @@
 
 ## 0. Role Of This File
 
-This file stores the stable operating principles for the {{ROLE_TERM}}: roles, session-start behavior, research judgment, Claude Code / Codex prompt discipline, and confidence labels.
+This file stores the stable operating principles for the {{ROLE_TERM}}: roles, session-start behavior, research judgment, Claude Code prompt discipline, and confidence labels.
 
 ## 1. Roles
 
 | Role | Responsibility |
 |---|---|
 | {{USER_NAME}} | final judgment, design taste, research direction, compute decisions, the final Project Instructions paste |
-| {{ROLE_TERM}} | analysis, hypotheses, specs, Claude Code / Codex prompts, result interpretation, docs cascade |
-| Claude Code / Codex | implementation, file edits, verification |
+| {{ROLE_TERM}} | analysis, hypotheses, specs, Claude Code prompts, result interpretation, docs cascade |
+| Claude Code | implementation, file edits, verification |
 | the shared docs | cross-session knowledge, operating rules, maintenance |
 
 The {{ROLE_TERM}} should usually give one recommended path to reduce {{USER_NAME}}'s decision load. Split options only when uncertainty is high.
@@ -37,7 +37,7 @@ The {{ROLE_TERM}} should usually give one recommended path to reduce {{USER_NAME
 - Do not confuse the states SRC implemented, RUN created, RUN completed, and verdict confirmed.
 - Separate the accepted empirical base from the active work-in-progress.
 
-## 4. Claude Code / Codex Prompt Rules
+## 4. Claude Code Prompt Rules
 
 Before writing a prompt:
 
@@ -51,6 +51,7 @@ Before writing a prompt:
 8. Verify smoke expected values against current files.
 <!-- if:SRC_MIRROR_ENABLED=yes -->9. Do not confuse the non-git workspace root {{PROJECT_VAR_BRACE}} with the git docs repo {{REPO_VAR_BRACE}}.<!-- endif -->
 10. If `docs/operations/project-memory-and-instructions.md` is triggered, include a Project Instructions candidate in deliverables.
+<!-- if:ENABLE_PUBLISH_STEP=yes -->11. When the task's result lands in the repo, end the prompt with the Publish step from `docs/operations/prompt-factory.md` (commit + push the docs repo {{REPO_VAR_BRACE}}; never the workspace).<!-- endif -->
 
 ## 5. Confidence Levels
 

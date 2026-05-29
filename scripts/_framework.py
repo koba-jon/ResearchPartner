@@ -349,6 +349,7 @@ DEFAULT_CONFIG = {
     "SRC_MIRROR_ENABLED": "no",
     "ENABLE_AUTO_MODE": "yes",         # Auto mode subsystem on by default (init no longer asks)
     "GENERATE_MANUAL": "yes",
+    "ENABLE_PUBLISH_STEP": "no",       # opt-in: adds a Publish closing step to prompt-factory (pairs with SRC_MIRROR_ENABLED)
     "EXPERIMENT_UNIT_LABEL": "Experiment",
     "ANALYSIS_RECORD_LABEL": "Note",
     # Optional shell-var-name overrides; blank -> derived from PROJECT_NAME
@@ -415,7 +416,7 @@ def validate_config(cfg):
     if env and env not in _COMPUTE_ENVS:
         problems.append("COMPUTE_ENV must be one of %s" % sorted(_COMPUTE_ENVS))
     for key in ("SRC_MIRROR_ENABLED", "ENABLE_AUTO_MODE", "GENERATE_MANUAL",
-                "DOCS_LANG_IS_ASCII"):
+                "ENABLE_PUBLISH_STEP", "DOCS_LANG_IS_ASCII"):
         val = str(cfg.get(key, "")).strip().lower()
         if val and val not in _YESNO:
             problems.append("%s must be 'yes' or 'no'" % key)
@@ -725,11 +726,22 @@ def lint_templates(root=None):
         fp = os.path.join(templates_dir, path)
         return read_text(fp) if os.path.isfile(fp) else None
 
+    # Single-brace shell-style refs to a token name (e.g. ${PROJECT_VAR_BRACE})
+    # never expand -- tokens render only via {{...}} -- so they leak the literal
+    # name into output. ${CLAUDE_DIR} is a real prompt shell var (not a token), exempt.
+    leak_names = sorted((n for n in known if n != "CLAUDE_DIR"), key=len, reverse=True)
+    leak_re = re.compile(r"\$\{(" + "|".join(re.escape(n) for n in leak_names) + r")\}")
+
     for rel in iter_template_files(templates_dir):
         text = read_text(os.path.join(templates_dir, rel))
         for lineno, token in find_unresolved(text):
             if token not in known:
                 problems.append("templates/%s:%d unknown token {{%s}}" % (rel, lineno, token))
+        for m in leak_re.finditer(text):
+            lineno = text.count("\n", 0, m.start()) + 1
+            problems.append("templates/%s:%d single-brace token leak ${%s} "
+                            "(use {{%s}} or a {{..._BRACE}} token; tokens expand only via {{...}})"
+                            % (rel, lineno, m.group(1), m.group(1)))
         try:
             out = render_str(text, probe, resolver)
         except RenderError as exc:

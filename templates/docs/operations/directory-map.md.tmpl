@@ -9,7 +9,7 @@ This file summarizes the {{PROJECT_NAME}} directories and the storage policy. Pa
 | `{{PROJECT_VAR_BRACE}}` | local master<!-- if:SRC_MIRROR_ENABLED=yes -->, not a git repo<!-- endif --> | real data, source, results, runners |
 | `{{REPO_VAR_BRACE}}` | git repo | common docs<!-- if:SRC_MIRROR_ENABLED=yes --> and the `src/` mirror<!-- endif --> |
 | `${CLAUDE_DIR}` | task artifacts | Claude Code outputs and workspaces |
-<!-- if:COMPUTE_ENV=colab -->| `${COMPUTE_DRIVE_VAR}` | transient compute workspace | experiment execution |<!-- endif -->
+<!-- if:COMPUTE_ENV=colab -->| `{{COMPUTE_DRIVE_VAR_BRACE}}` | transient compute workspace | experiment execution |<!-- endif -->
 
 <!-- if:COMPUTE_ENV=colab -->
 The transient compute drive may not retain past {{EXPERIMENT_UNIT_LABEL}} results. Cross-{{EXPERIMENT_UNIT_LABEL}} aggregation should happen in the local master, not on the transient drive.

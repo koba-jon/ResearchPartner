@@ -50,17 +50,22 @@ class MatrixCase(unittest.TestCase):
 
     def test_leanest(self):
         clone = self._render("lean", SRC_MIRROR_ENABLED="no", ENABLE_AUTO_MODE="no",
-                             GENERATE_MANUAL="no")
+                             GENERATE_MANUAL="no", ENABLE_PUBLISH_STEP="no")
         self.assertFalse(os.path.exists(os.path.join(clone, "docs", "operations", "auto-mode.md")))
         self.assertFalse(os.path.exists(os.path.join(clone, "GETTING_STARTED.md")))
+        pf = u.read(os.path.join(clone, "docs", "operations", "prompt-factory.md"))
+        self.assertNotIn("Publish (optional closing step)", pf)
 
     def test_all_on(self):
         clone = self._render("all", SRC_MIRROR_ENABLED="yes", ENABLE_AUTO_MODE="yes",
-                             GENERATE_MANUAL="yes", COMPUTE_ENV="colab",
+                             GENERATE_MANUAL="yes", ENABLE_PUBLISH_STEP="yes",
+                             COMPUTE_ENV="colab",
                              COMPUTE_DRIVE="/content/drive/MyDrive/X",
                              EXPERIMENT_UNIT_LABEL="Wave", ANALYSIS_RECORD_LABEL="Theme")
         self.assertTrue(os.path.exists(os.path.join(clone, "docs", "operations", "auto-mode.md")))
         self.assertTrue(os.path.exists(os.path.join(clone, "GETTING_STARTED.md")))
+        pf = u.read(os.path.join(clone, "docs", "operations", "prompt-factory.md"))
+        self.assertIn("Publish (optional closing step)", pf)
 
 
 if __name__ == "__main__":

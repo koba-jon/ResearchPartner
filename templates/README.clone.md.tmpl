@@ -1,11 +1,12 @@
 # {{PROJECT_NAME}}
 
-This repository is the **operating layer** for the {{PROJECT_NAME}} research project: a shared knowledge base and rule set that lets Claude act as a consistent research collaborator (the {{ROLE_TERM}}) across Claude Chat and Claude Code. It was generated from the [ResearchPartner](https://github.com/) base template.
+This repository is the **operating layer** for the {{PROJECT_NAME}} research project: a shared knowledge base and rule set that lets Claude act as a consistent research collaborator (the {{ROLE_TERM}}) across Claude Chat and Claude Code. It was generated from the [ResearchPartner](https://github.com/koba-jon/ResearchPartner) base template.
 
 ## How it is used
 
 - **Claude Chat (Project):** paste `project-instructions.txt` into the Project's custom instructions. The {{ROLE_TERM}} then reads `docs/entrypoint.md` first each session and pulls only the docs it needs.
-- **Claude Code / Codex:** prompts follow `docs/operations/prompt-factory.md` and the path variables in `docs/entrypoint.md` section 0.
+- **Claude Code:** prompts follow `docs/operations/prompt-factory.md` and the path variables in `docs/entrypoint.md` section 0.
+- **Keeping Chat in sync:** the Project reads a snapshot of this repo. After Claude Code pushes (or you push), refresh the Project's connected source so the {{ROLE_TERM}} reads the latest commit, not a stale copy.
 - **Knowledge base:** everything the project knows lives under `docs/` and is the single source of truth, gated by `make docs-check`.
 
 ## Layout

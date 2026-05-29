@@ -19,10 +19,11 @@
   "COMPUTE_ENV": "local-gpu",
   "COMPUTE_DRIVE": "",
 
-  "_subsystems": "Toggle the optional subsystems. init no longer asks any of these: SRC_MIRROR_ENABLED is auto-enabled when PROJECT_ROOT/src exists; GENERATE_MANUAL and ENABLE_AUTO_MODE default to 'yes'.",
+  "_subsystems": "Toggle the optional subsystems. init no longer asks any of these: SRC_MIRROR_ENABLED is auto-enabled when PROJECT_ROOT/src exists; GENERATE_MANUAL and ENABLE_AUTO_MODE default to 'yes'. ENABLE_PUBLISH_STEP defaults to 'no' and is opt-in; set it to 'yes' (together with SRC_MIRROR_ENABLED) to add a Publish closing step to the prompt-factory skeletons so generated prompts mirror src and push the docs repo after verification.",
   "SRC_MIRROR_ENABLED": "yes",
   "ENABLE_AUTO_MODE": "yes",
   "GENERATE_MANUAL": "yes",
+  "ENABLE_PUBLISH_STEP": "no",
 
   "_vocabulary": "User-facing labels. GSAD used Wave / Theme.",
   "EXPERIMENT_UNIT_LABEL": "Experiment",

@@ -26,6 +26,7 @@ BASE_CONFIG = {
     "SRC_MIRROR_ENABLED": "no",
     "ENABLE_AUTO_MODE": "no",
     "GENERATE_MANUAL": "no",
+    "ENABLE_PUBLISH_STEP": "no",
     "EXPERIMENT_UNIT_LABEL": "Experiment",
     "ANALYSIS_RECORD_LABEL": "Note",
 }

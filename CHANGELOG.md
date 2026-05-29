@@ -14,6 +14,13 @@ framework, not any individual clone (a clone records its own history in git).
   Implement, Experiment, Analyze, Write) plus two cross-cutting modes (Auto,
   Maintain). Result ingestion folds into Experiment, critical verification into
   Analyze, reflection into Maintain.
+- Optional Publish closing step (`ENABLE_PUBLISH_STEP`, default `no`): when
+  enabled, the prompt-factory grows a Publish section so a generated Claude Code
+  prompt mirrors `src/` and commits+pushes the docs repo after verification
+  (never the non-git workspace).
+- Base lint now flags single-brace token leaks (`${TOKEN}` where a `{{TOKEN}}`
+  was meant), the bug class behind two worked-example / path-table defects;
+  covered by a new `tests/test_lint.py`.
 - Private-clone distribution: clone the base, detach to `upstream`, configure
   with `scripts/init.py` (phased interview + read-only workspace ingest), push to
   your own private repo. `init` never pushes and never creates a remote.
@@ -54,4 +61,4 @@ framework, not any individual clone (a clone records its own history in git).
   setup, and a maintainers section. `SETUP.md` was removed and its unique content
   folded into `README.md`.
 
-[Unreleased]: https://github.com/
+[Unreleased]: https://github.com/koba-jon/ResearchPartner/commits/main

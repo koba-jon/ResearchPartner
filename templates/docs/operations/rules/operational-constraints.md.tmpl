@@ -24,7 +24,7 @@ Project knowledge can be stale. Code-grounded claims must be checked against cur
 
 ## 4. OC-4: `notebook_and_code_editing_boundary`
 
-{{USER_NAME}} owns placement decisions. Notebook and code edits by Claude Code / Codex are allowed only within the requested task scope.
+{{USER_NAME}} owns placement decisions. Notebook and code edits by Claude Code are allowed only within the requested task scope.
 
 ## 5. OC-5: `path_variables_canonical`
 
@@ -80,7 +80,7 @@ Task time estimation uses empirical marginal-value discipline:
 <!-- if:SRC_MIRROR_ENABLED=yes -->
 ## 11. OC-11: `workspace_root_is_non_git_local_master`
 
-{{PROJECT_VAR_BRACE}} is a non-git local master. Claude Code / Codex prompts must not include `git commit` or `git push` for it. The git repo for the common docs and the `src/` mirror is {{REPO_VAR_BRACE}}.
+{{PROJECT_VAR_BRACE}} is a non-git local master. Claude Code prompts must not include `git commit` or `git push` for it. The git repo for the common docs and the `src/` mirror is {{REPO_VAR_BRACE}}.
 
 ## 12. OC-12: `src_mirror_sync`
 
@@ -95,7 +95,7 @@ Auto mode never edits existing project files in place. It uses an isolated task 
 Implications:
 
 - The workspace source, datasets, checkpoints, result directories, and notebooks are read-only during Auto mode campaigns.
-- Claude Code / Codex copies required source files into `${CLAUDE_DIR}/{TASK_ID}/workspace/src/` and mutates only that copy.
+- Claude Code copies required source files into `${CLAUDE_DIR}/{TASK_ID}/workspace/src/` and mutates only that copy.
 - Experiment outputs, run-local checkpoints, results, logs, and patches go under `${CLAUDE_DIR}/{TASK_ID}/`.
 - The campaign deliverable is a patch proposal with evidence; applying it to the workspace is a separate explicit task.
 - Fair comparison is tier-based: the case subset, epochs, seed, batch size, score aggregation, and metric parser must match inside a tier.
