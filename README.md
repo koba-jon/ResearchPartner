@@ -49,6 +49,7 @@ Move the clone so it sits **inside** your project's working directory (the folde
 ```
 
 ```bash
+cd ..
 mv <your-repo-name> /path/to/<PROJECT_ROOT>/
 cd /path/to/<PROJECT_ROOT>/<your-repo-name>
 ```
