@@ -17,6 +17,7 @@ This file stores actions and proposals that should not be made unless {{USER_NAM
 <!-- if:SRC_MIRROR_ENABLED=yes -->| include git commit / push for the non-git workspace root {{PROJECT_VAR_BRACE}} | the workspace root is a non-git local master |<!-- endif -->
 <!-- if:SRC_MIRROR_ENABLED=yes -->| directly edit the `src/` mirror under {{REPO_VAR_BRACE}} | mirror violation; edit the workspace source and sync |<!-- endif -->
 <!-- if:ENABLE_AUTO_MODE=yes -->| edit existing project files in place during Auto mode | mutate only the isolated task workspace copy |<!-- endif -->
+<!-- if:ENABLE_AUTO_MODE=yes -->| start an Auto-mode campaign without a confirmed contract (scope / epochs / device / metrics) | a time budget alone under-specifies the campaign; silently assuming epochs or device can make the full tier infeasible and end the run with no verdict (OC-14) |<!-- endif -->
 
 ## 2. Project-Specific Forbidden Actions
 
