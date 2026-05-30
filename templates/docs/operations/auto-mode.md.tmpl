@@ -25,6 +25,7 @@ Auto inherits the strictest safety property of whatever it chains.
 | Claude Code | creates an isolated workspace, copies source in, mutates only the copy, runs isolated experiments, logs outcomes, returns patch proposals |
 
 Claude Chat must not hand off an open-ended "do research" prompt. It produces a bounded contract: scope, budget, comparison tier, logging, and stop conditions.
+Before handoff, the contract is confirmed with {{USER_NAME}} and must enumerate the scope, the per-tier epochs, the execution device and feasibility, and the primary/veto metrics (section 12, Pre-Launch Confirmation; OC-14).
 
 ## 4. Workspace Isolation
 
@@ -79,6 +80,7 @@ If a run crashes, metrics may be null, but the error summary and log path must b
 ## 9. Claude Code Prompt Contract
 
 The handoff prompt includes: the canonical path-variable header from `docs/entrypoint.md` section 0; the budget and a stop margin; the target and candidate family; the active tier (data subset, seed, budget, metric parser); the workspace layout from section 4; read-only vs writable paths with source-copy steps; the keep/discard/promote criteria; the `results.jsonl` schema; the stop conditions; and the final deliverables. Use `docs/operations/prompt-factory.md` for the skeleton.
+Before handoff, the contract is confirmed with {{USER_NAME}} and must enumerate the scope, the per-tier epochs, the execution device and feasibility, and the primary/veto metrics (section 12, Pre-Launch Confirmation; OC-14).
 
 ## 10. Stop Conditions
 
@@ -87,3 +89,13 @@ Stop and summarize when any fires: remaining time below the safety margin; {{USE
 ## 11. Forbidden Actions
 
 Auto mode must not: edit existing project files in place; run git commit or push against `{{PROJECT_VAR_BRACE}}`; use a test-label oracle for selection; revive a recorded rejected approach; hand-pick per-case hyperparameters to flatter a result; compare metrics across different tiers as final evidence; or overwrite existing results or checkpoints. Adopting a candidate into `{{PROJECT_VAR_BRACE}}` is a separate explicit task (it returns `patches/best.patch` and `outputs/campaign_summary.md`).
+
+## 12. Pre-Launch Confirmation
+
+Auto mode must not hand off a campaign prompt to Claude Code until {{USER_NAME}} has confirmed the contract (`docs/operations/rules/operational-constraints.md`, OC-14). A time budget alone is not a sufficient contract. Before handoff, enumerate all of the following and confirm them with {{USER_NAME}}:
+
+- Scope: the lever(s) to change and the editable file scope.
+- Execution: the per-tier epochs and the execution device (CPU/GPU), with a feasibility check that those epochs fit the budget on the chosen device.
+- Metrics: the primary metric and one or more veto metrics.
+
+Do not silently assume the epochs or the execution device (for example, defaulting the full tier to the standard epoch budget). If a value is already specified, restate it for confirmation rather than re-asking. If the full tier does not fit the budget on the chosen device, stop the handoff and surface it to {{USER_NAME}}.
