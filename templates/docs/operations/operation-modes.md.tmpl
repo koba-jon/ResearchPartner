@@ -22,7 +22,7 @@ Boundary between the two read-only research modes: **Investigate** brings in inf
 These are not lifecycle steps; they sit above or alongside the loop.
 
 <!-- if:ENABLE_AUTO_MODE=yes -->
-- **Auto** — autonomously chain the lifecycle modes toward a goal, inside hard safety boundaries (isolated workspace, fixed budget, explicit stop conditions). Auto-running the read-only modes (Investigate, Design, Analyze) is low-risk; auto-running Implement or Experiment **must** use an isolated workspace and never edit existing files in place. Auto returns proposals for Write and Maintain rather than performing them autonomously. See `docs/operations/auto-mode.md`.
+- **Auto** — autonomously chain the lifecycle modes toward a goal, inside hard safety boundaries (isolated workspace, fixed budget, explicit stop conditions). Auto-running the read-only modes (Investigate, Design, Analyze) is low-risk; auto-running Implement or Experiment **must** use an isolated workspace and never edit existing files in place. Auto returns proposals for Write and Maintain rather than performing them autonomously. Before handing off a campaign, confirm the contract (scope, per-tier epochs, execution device and feasibility, primary/veto metrics) with {{USER_NAME}} (OC-14). See `docs/operations/auto-mode.md`.
 <!-- endif -->
 - **Maintain** — keep the project healthy: docs consistency and large-scale cleanup, plus the reflection ritual that turns failures into prevention rules (operational constraints and {{ANALYSIS_RECORD_LABEL}}s). See `docs/operations/maintenance-mode.md`.
 
