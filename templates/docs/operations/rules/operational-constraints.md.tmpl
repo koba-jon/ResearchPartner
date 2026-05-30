@@ -100,6 +100,16 @@ Implications:
 - The campaign deliverable is a patch proposal with evidence; applying it to the workspace is a separate explicit task.
 - Fair comparison is tier-based: the case subset, epochs, seed, batch size, score aggregation, and metric parser must match inside a tier.
 
+## 14. OC-14: `auto_mode_requires_confirmed_contract`
+
+Auto mode must not hand off a campaign prompt to Claude Code until {{USER_NAME}} has confirmed the contract. A time budget alone is not a sufficient contract.
+
+Implications:
+
+- The contract must explicitly enumerate: (a) the lever(s) to change and the editable file scope; (b) the per-tier epochs and the execution device (CPU/GPU), with a feasibility check that those epochs fit the budget on the chosen device; (c) the primary metric and one or more veto metrics.
+- Do not silently assume the epoch count (for example, defaulting the full tier to the standard epoch budget). Do not silently assume the execution device.
+- If a value is already specified, restate it for confirmation rather than re-asking.
+- If the full tier does not fit the budget on the chosen device, surface that before handoff. The gating procedure is in `docs/operations/auto-mode.md` section 12 (Pre-Launch Confirmation).
 <!-- endif -->
 Conditional OC numbers (OC-11 and above) may be absent when the corresponding subsystem is off in this clone, and that is fine; the OC identifiers stay stable regardless.
 
